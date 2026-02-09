@@ -1,9 +1,9 @@
 {
-    "turn": "coder",
+    "turn": "reviewer",
     "sprint": "6.1",
-    "feature": "Responsive Design Polish + World-class Desktop / Mobile-optimized",
-    "lastUpdate": "2026-02-09T22:25:00+07:00",
-    "cycle": 0,
-    "lastVerdict": "APPROVED",
-    "directorNote": "Sprint 6.0 APPROVED! Director ส่ง Design Directive มาเพิ่ม: ⚡ DESIGN REQUIREMENT — Desktop: World-class layout แสดงเนื้อหาเยอะ rich content (wide tables, multi-column grids, detailed stats), Mobile: optimized สำหรับมือถือ (stacked cards, compact layout, thumb-friendly). ใช้ breakpoints md/lg แยกชัดเจน. Apply ทุกหน้า: Landing, Browse, Product Detail, Owner Dashboard, Admin Dashboard, Staff Panel. อย่าหยุด ทำต่อเลย!"
+    "feature": "Responsive Design Polish — Desktop Tables + Two-column Layouts",
+    "lastUpdate": "2026-02-09T22:43:00+07:00",
+    "cycle": 1,
+    "lastVerdict": "PENDING",
+    "directorNote": ""
 }
