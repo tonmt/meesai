@@ -1,136 +1,185 @@
 # MeeSai (ມີໃສ່) — Fashion Bank of Laos
 
-> **ຢູ່ໃສບໍ່ມີ... ມາພີ້ 'ມີໃສ່'**
-> O2O Fashion Rental Platform · Vientiane, Laos
+> แพลตฟอร์มเช่าชุดแฟชั่น O2O แห่งแรกของ สปป.ลาว
 
-[![Live](https://img.shields.io/badge/Live-meesai.vgroup.work-D4AF37?style=flat-square)](https://meesai.vgroup.work)
-[![Version](https://img.shields.io/badge/Version-0.2.0-0F172A?style=flat-square)](#)
-[![Phase](https://img.shields.io/badge/Phase-2%20Responsive-10B981?style=flat-square)](#)
-[![Theme](https://img.shields.io/badge/Theme-Light-F9FAFB?style=flat-square&labelColor=D4AF37)](#)
-
----
-
-## 🎯 Vision
-
-MeeSai เป็นแพลตฟอร์ม **เช่าชุดแฟชั่น** แบบ Online-to-Offline สำหรับประเทศลาว ด้วยโมเดล **Zero GP (0% Commission)** — เรียกเก็บเฉพาะค่าบริการ ไม่หักค่าหัวคิวจากเจ้าของชุด
-
-### Core Concept: Fashion Bank
-- ชุดทุกตัวเป็น **ทรัพย์สิน (Asset)** ที่สร้างรายได้ passive income
-- เจ้าของชุดฝากชุดเข้าระบบ → ระบบจัดการเช่า → เงินเข้า Wallet
-- ผู้เช่าได้ชุดคุณภาพ ผ่านมาตรฐาน Hygiene + Buffer Time
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?logo=typescript)](https://typescriptlang.org)
+[![Prisma](https://img.shields.io/badge/Prisma-6-2D3748?logo=prisma)](https://prisma.io)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql)](https://postgresql.org)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://docker.com)
 
 ---
 
-## 🛠 Tech Stack
+## Overview
+
+MeeSai เป็นแพลตฟอร์มกลางสำหรับเช่าชุดแฟชั่นในลาว โดยใช้โมเดล **0% GP** — เจ้าของชุดฝากชุดและรับรายได้ 100% จากค่าเช่า แพลตฟอร์มสร้างรายได้จาก Service Fee, Delivery, Insurance
+
+### Key Features
+- 🔍 **Smart Catalog** — ค้นหาชุดตามหมวดหมู่ ไซส์ สี พร้อมเช็คคิวว่าง Real-time
+- 📅 **Concurrency Booking** — ระบบจอง Time-based Locking ป้องกัน Double Booking
+- 🔄 **FSM (9 States)** — Finite State Machine ควบคุมสถานะชุดทุกขั้นตอน
+- 💰 **Double-Entry Ledger** — ระบบบัญชีคู่ ตรวจสอบเส้นทางการเงินทุกกีบ
+- 📸 **Immutable Audit Trail** — หลักฐาน QC เก็บแบบแก้ไขไม่ได้
+- 🌐 **Bilingual** — ภาษาลาว (primary) + ภาษาอังกฤษ
+- 📱 **Responsive** — Mobile-first design + Desktop table views
+- 🔔 **Real-time Notifications** — In-app notification bell
+
+### User Roles
+| Role | Description |
+|:-----|:------------|
+| **Renter** | ผู้เช่าชุด — browse, book, pay |
+| **Owner** | เจ้าของชุด — ฝากชุด, ดูรายได้, จัดการ inventory |
+| **Staff** | พนักงาน — จัดการ booking status, QC, ส่งมอบ |
+| **Admin** | ผู้ดูแลระบบ — ดูภาพรวม, จัดการทุกอย่าง |
+
+---
+
+## Tech Stack
 
 | Layer | Technology |
-|:---|:---|
-| **Framework** | Next.js 16.1.6 (App Router, Turbopack) |
-| **Language** | TypeScript (Strict Mode) |
-| **Styling** | Tailwind CSS v4 |
-| **Database** | PostgreSQL 16 + Prisma 6 |
-| **Storage** | MinIO (S3 Compatible) |
-| **Cache** | Redis 7 |
-| **i18n** | next-intl (ລາວ / English) |
-| **Icons** | Lucide React |
-| **Deploy** | Docker Compose (Isolated Stack) |
+|:------|:-----------|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript (Strict Mode) |
+| Styling | Tailwind CSS v4 |
+| Database | PostgreSQL 16 + Prisma 6 |
+| Storage | MinIO (S3 Compatible) |
+| Cache | Redis 7 |
+| i18n | next-intl (LO/EN) |
+| Auth | NextAuth.js v5 |
+| Container | Docker Compose |
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Node.js 20+
-- Docker + Docker Compose
+- Docker & Docker Compose
+- npm 10+
 
-### Development
+### 1. Clone & Install
 ```bash
-# Install dependencies
+git clone <repo-url> meesai
+cd meesai
+cp .env.example .env
 npm install
+```
 
-# Generate Prisma client
+### 2. Start Services (Database + MinIO + Redis)
+```bash
+docker compose up -d postgres minio redis
+```
+
+### 3. Setup Database
+```bash
 npx prisma generate
+npx prisma db push
+npx prisma db seed
+```
 
-# Start dev server
+### 4. Run Development Server
+```bash
 npm run dev
 ```
 
-### Production (Docker)
-```bash
-# Build & deploy all containers
-docker compose up -d --build
+App available at: http://localhost:3000
 
-# Check health
-docker ps --filter "name=meesai"
+---
+
+## Production Deployment
+
+### One-Command Deploy
+```bash
+docker compose up -d --build
 ```
 
----
+This starts the full stack:
+- **App** → port `4200`
+- **PostgreSQL** → port `4203`
+- **MinIO** → port `4204` (API), `4205` (Console)
+- **Redis** → port `4206`
 
-## 🐳 Infrastructure
+### Environment Variables
+See `.env.example` for all required variables.
 
-| Container | Port | Service |
-|:---|:---:|:---|
-| `meesai-app` | 4200 | Next.js Application |
-| `meesai-postgres` | 4203 | PostgreSQL 16 |
-| `meesai-minio` | 4204 / 4205 | MinIO API / Console |
-| `meesai-redis` | 4206 | Redis 7 |
-
-**Subdomain:** [meesai.vgroup.work](https://meesai.vgroup.work)
-**SSL:** Cloudflare (auto, proxied)
+### Reverse Proxy
+Configure Nginx Proxy Manager or Cloudflare to point to `http://server:4200`
 
 ---
 
-## 📁 Project Structure
+## Test Credentials
+
+| Role | Phone | Password |
+|:-----|:------|:---------|
+| Admin | 02099990001 | meesai123 |
+| Staff | 02099990002 | meesai123 |
+| Owner | 02055551001 | meesai123 |
+| Renter | 02077772001 | meesai123 |
+
+---
+
+## Project Structure
 
 ```
 meesai/
+├── prisma/
+│   ├── schema.prisma          # Database schema (12 models, 8 enums)
+│   └── seed.ts                # Seed data (users, products, categories)
 ├── src/
 │   ├── app/
-│   │   ├── globals.css          # Design System (Light Theme)
-│   │   ├── layout.tsx           # Root Layout
-│   │   └── [locale]/
-│   │       ├── layout.tsx       # Locale Layout (NextIntlClientProvider)
-│   │       └── page.tsx         # Landing Page (imports 8 components)
-│   ├── components/
-│   │   └── landing/
-│   │       ├── StickyHeader.tsx  # Desktop nav + mobile hamburger
-│   │       ├── HeroSection.tsx   # Split layout PC / center mobile
-│   │       ├── BookingEngine.tsx  # Responsive grid 1→4
-│   │       ├── OccasionNav.tsx   # Scroll → grid 6
-│   │       ├── DynamicFeed.tsx   # Sidebar filter + bottom sheet
-│   │       ├── TrustSection.tsx  # Trust badges
-│   │       ├── OwnerZone.tsx     # Partner zone + benefit cards
-│   │       ├── Footer.tsx        # 4-column + social icons
-│   │       └── BottomNav.tsx     # Mobile tab bar
-│   ├── i18n/
-│   │   ├── navigation.ts       # Link, redirect, usePathname, useRouter
-│   │   ├── request.ts          # Locale detection + message loading
-│   │   └── routing.ts          # Supported locales config
-│   └── middleware.ts            # Locale routing middleware
-├── messages/
-│   ├── lo.json                  # ພາສາລາວ (Primary)
-│   └── en.json                  # English (Secondary)
-├── prisma/
-│   └── schema.prisma            # Database schema (6 models)
-├── docker-compose.yml           # Isolated 4-container stack
-├── Dockerfile                   # Multi-stage production build
-└── docs/
-    ├── ARCHITECTURE.md          # System architecture
-    └── PROGRESS.md              # Phase progress tracker
+│   │   ├── [locale]/          # i18n routes (lo/en)
+│   │   │   ├── browse/        # Product browsing
+│   │   │   ├── product/[id]/  # Product detail
+│   │   │   ├── booking/[id]/  # Booking flow
+│   │   │   ├── admin/         # Admin dashboard
+│   │   │   ├── owner/         # Owner dashboard
+│   │   │   └── staff/         # Staff operations
+│   │   └── api/auth/          # NextAuth.js endpoints
+│   ├── actions/               # Server Actions (mutations)
+│   ├── components/            # Reusable UI components
+│   ├── lib/                   # Utilities (prisma, auth, fsm)
+│   └── i18n/                  # Internationalization config
+├── docs/
+│   ├── GEMINI_CONTEXT.md      # Business context for AI review
+│   └── INVESTOR_DECK_V3.md   # Investor presentation
+├── docker-compose.yml         # Production stack
+├── Dockerfile                 # Multi-stage build
+└── .agent/                    # Dual-agent protocol (Coder ↔ Reviewer)
 ```
 
 ---
 
-## 📚 Documentation
+## 5 Technical Pillars
 
-| Document | Description |
-|:---|:---|
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design, database schema, design system |
-| [PROGRESS.md](docs/PROGRESS.md) | Phase tracker — what's done, what's next |
-| [CHANGELOG.md](CHANGELOG.md) | Version history |
+1. **Concurrency Booking** — `prisma.$transaction()` + buffer time
+2. **FSM (9 States)** — `transitionAssetStatus()` enforced transitions
+3. **Product vs ItemAsset** — SKU ≠ Physical item (unique barcode per unit)
+4. **Double-Entry Ledger** — No balance field, computed from transactions
+5. **Immutable Evidence** — MinIO Object Lock for QC photos
 
 ---
 
-## 📄 License
+## Sprint History (v1.0.0)
 
-Private — DDC Groups / V-Group
+| Sprint | Feature |
+|:-------|:--------|
+| 3.1 | Database + Seed Data |
+| 3.2 | Authentication System |
+| 3.3 | Booking Logic FSM |
+| 3.4 | Payment + Wallet |
+| 3.5 | Browse + Product Detail |
+| 4.1 | Owner + Admin Dashboards |
+| 4.2 | Staff Panel |
+| 5.0 | Navigation + Profile + Account |
+| 5.2 | Booking Flow Fixes |
+| 6.0 | Notification Bell |
+| 6.1 | Responsive: Admin/Owner/Staff |
+| 6.2 | Responsive: Browse/Product + Landing CTA |
+| 7.0 | Error Boundaries + Loading + SEO |
+| 7.1 | MVP Complete (README + Production Config) |
+
+---
+
+## License
+
+Proprietary — DDC Groups / V-Group © 2026
