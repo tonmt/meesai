@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { CalendarDays, CreditCard, Shield, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
+import { CalendarDays, Shield, Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
 import { createBookingAction, checkAvailabilityAction } from '@/actions/booking'
 
 type Product = {
@@ -24,8 +24,7 @@ export default function BookingForm({ product, locale, userId }: Props) {
     const [loading, setLoading] = useState(false)
     const [checking, setChecking] = useState(false)
     const [error, setError] = useState('')
-    const [success, setSuccess] = useState(false)
-    const [qrCode, setQrCode] = useState('')
+
     const [available, setAvailable] = useState<boolean | null>(null)
     const [selectedAsset, setSelectedAsset] = useState(product.assets[0]?.id || '')
 
@@ -75,9 +74,9 @@ export default function BookingForm({ product, locale, userId }: Props) {
 
         try {
             const result = await createBookingAction(form)
-            if (result.success) {
-                setSuccess(true)
-                setQrCode(result.qrCode || '')
+            if (result.success && result.bookingId) {
+                // Redirect to payment page
+                router.push(`/${locale}/payment/${result.bookingId}`)
             } else {
                 setError(result.error || 'ເກີດຂໍ້ຜິດພາດ')
             }
@@ -86,56 +85,6 @@ export default function BookingForm({ product, locale, userId }: Props) {
         } finally {
             setLoading(false)
         }
-    }
-
-    // ─── Success View ───
-    if (success) {
-        return (
-            <div className="glass rounded-3xl p-8 border border-white/60 text-center">
-                <CheckCircle2 className="w-20 h-20 text-emerald mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-royal-navy mb-2">
-                    {locale === 'lo' ? 'ຈອງສຳເລັດ!' : 'Booking Confirmed!'}
-                </h3>
-                <p className="text-navy-600 mb-6">
-                    {locale === 'lo' ? 'ກະລຸນາຊຳລະເງິນພາຍໃນ 24 ຊົ່ວໂມງ' : 'Please pay within 24 hours'}
-                </p>
-
-                {/* QR Code */}
-                <div className="bg-white rounded-2xl p-6 inline-block shadow-lg mb-6">
-                    <div className="w-48 h-48 bg-gradient-to-br from-royal-navy to-champagne-gold rounded-xl flex items-center justify-center">
-                        <span className="text-white font-mono text-sm">{qrCode}</span>
-                    </div>
-                    <p className="text-xs text-gray-400 mt-2">{locale === 'lo' ? 'ໃຊ້ QR ນີ້ ຕອນຮັບຊຸດ' : 'Show QR at pickup'}</p>
-                </div>
-
-                {/* Summary */}
-                <div className="bg-emerald/5 rounded-xl p-4 text-left mb-6">
-                    <div className="flex justify-between text-sm text-navy-600 mb-2">
-                        <span>{locale === 'lo' ? 'ຄ່າເຊົ່າ' : 'Rental'}</span>
-                        <span>{new Intl.NumberFormat('lo-LA').format(product.rentalPrice)} ₭</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-navy-600 mb-2">
-                        <span>{locale === 'lo' ? 'ຄ່າບໍລິການ (10%)' : 'Service (10%)'}</span>
-                        <span>{new Intl.NumberFormat('lo-LA').format(serviceFee)} ₭</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-navy-600 mb-2">
-                        <span>{locale === 'lo' ? 'ມັດຈຳ (30%)' : 'Deposit (30%)'}</span>
-                        <span>{new Intl.NumberFormat('lo-LA').format(deposit)} ₭</span>
-                    </div>
-                    <div className="border-t border-emerald/20 pt-2 mt-2 flex justify-between font-bold text-royal-navy">
-                        <span>{locale === 'lo' ? 'ລວມ' : 'Total'}</span>
-                        <span>{new Intl.NumberFormat('lo-LA').format(total)} ₭</span>
-                    </div>
-                </div>
-
-                <button
-                    onClick={() => router.push(`/${locale}`)}
-                    className="w-full py-3 bg-champagne-gold text-royal-navy font-bold rounded-xl text-base hover:bg-champagne-gold/90 transition-all"
-                >
-                    {locale === 'lo' ? 'ກັບໜ້າຫຼັກ' : 'Back to Home'}
-                </button>
-            </div>
-        )
     }
 
     return (
@@ -270,8 +219,8 @@ export default function BookingForm({ product, locale, userId }: Props) {
                     type="submit"
                     disabled={loading || checking}
                     className={`w-full py-3.5 font-bold rounded-xl text-base flex items-center justify-center gap-2 shadow-lg transition-all ${available
-                            ? 'bg-champagne-gold text-royal-navy hover:bg-champagne-gold/90 shadow-champagne-gold/20'
-                            : 'bg-royal-navy text-white hover:bg-royal-navy/90 shadow-royal-navy/20'
+                        ? 'bg-champagne-gold text-royal-navy hover:bg-champagne-gold/90 shadow-champagne-gold/20'
+                        : 'bg-royal-navy text-white hover:bg-royal-navy/90 shadow-royal-navy/20'
                         } disabled:opacity-60`}
                 >
                     {(loading || checking) && <Loader2 className="w-4 h-4 animate-spin" />}

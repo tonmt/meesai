@@ -153,9 +153,25 @@ export default function MyBookingsList({ bookings, locale }: Props) {
                                     <span className="text-base font-bold text-danger">
                                         {formatPrice(total)} ₭
                                     </span>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 items-center">
                                         {booking.qrCode && booking.status !== 'CANCELLED' && (
-                                            <span className="text-xs text-gray-400 font-mono">{booking.qrCode}</span>
+                                            <span className="text-xs text-gray-400 font-mono hidden sm:inline">{booking.qrCode}</span>
+                                        )}
+                                        {booking.status === 'PENDING' && (
+                                            <a
+                                                href={`/${locale}/payment/${booking.id}`}
+                                                className="px-3 py-1.5 text-xs font-bold text-white bg-champagne-gold rounded-lg hover:bg-champagne-gold/90 transition-all"
+                                            >
+                                                {locale === 'lo' ? 'ຊຳລະ' : 'Pay'}
+                                            </a>
+                                        )}
+                                        {booking.status === 'CONFIRMED' && (
+                                            <a
+                                                href={`/${locale}/payment/${booking.id}`}
+                                                className="px-3 py-1.5 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-all"
+                                            >
+                                                {locale === 'lo' ? 'ເບິ່ງໃບເສັດ' : 'Receipt'}
+                                            </a>
                                         )}
                                         {canCancel && (
                                             <button
