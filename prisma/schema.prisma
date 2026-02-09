@@ -1,0 +1,142 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───
+
+enum UserRole {
+  RENTER
+  OWNER
+  ADMIN
+}
+
+enum ItemStatus {
+  AVAILABLE
+  RENTED
+  MAINTENANCE
+  RETIRED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  PICKED_UP
+  RETURNED
+  COMPLETED
+  CANCELLED
+}
+
+enum PayoutStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+}
+
+// ─── Models ───
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String   @unique
+  email     String?
+  role      UserRole @default(RENTER)
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items    Item[]
+  bookings Booking[]
+  wallet   Wallet?
+
+  @@map("users")
+}
+
+model Category {
+  id      String @id @default(cuid())
+  nameLo  String @map("name_lo")
+  nameEn  String @map("name_en")
+  icon    String
+  slug    String @unique
+  sortOrder Int  @default(0) @map("sort_order")
+
+  items Item[]
+
+  @@map("categories")
+}
+
+model Item {
+  id          String     @id @default(cuid())
+  barcode     String     @unique   // Unique Asset Identity
+  titleLo     String     @map("title_lo")
+  titleEn     String?    @map("title_en")
+  description String?
+  images      String[]
+  buyPrice    Int        @map("buy_price")     // LAK
+  rentalPrice Int        @map("rental_price")  // LAK
+  size        String
+  color       String?
+  brand       String?
+  status      ItemStatus @default(AVAILABLE)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  categoryId String   @map("category_id")
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  ownerId String @map("owner_id")
+  owner   User   @relation(fields: [ownerId], references: [id])
+
+  bookings Booking[]
+
+  @@map("items")
+}
+
+model Booking {
+  id         String        @id @default(cuid())
+  eventDate  DateTime      @map("event_date")
+  pickupDate DateTime      @map("pickup_date")
+  returnDate DateTime      @map("return_date")
+  bufferEnd  DateTime      @map("buffer_end")  // Auto-calculated
+  rentalFee  Int           @map("rental_fee")   // → Owner
+  serviceFee Int           @map("service_fee")  // → Platform
+  deposit    Int           @default(0)
+  status     BookingStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  renterId String @map("renter_id")
+  renter   User   @relation(fields: [renterId], references: [id])
+
+  itemId String @map("item_id")
+  item   Item   @relation(fields: [itemId], references: [id])
+
+  @@map("bookings")
+}
+
+model Wallet {
+  id      String @id @default(cuid())
+  userId  String @unique @map("user_id")
+  user    User   @relation(fields: [userId], references: [id])
+  balance Int    @default(0)
+
+  payouts Payout[]
+
+  @@map("wallets")
+}
+
+model Payout {
+  id        String       @id @default(cuid())
+  walletId  String       @map("wallet_id")
+  wallet    Wallet       @relation(fields: [walletId], references: [id])
+  amount    Int
+  status    PayoutStatus @default(PENDING)
+  note      String?
+  createdAt DateTime     @default(now())
+
+  @@map("payouts")
+}

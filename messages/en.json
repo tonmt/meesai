@@ -1,0 +1,68 @@
+{
+    "meta": {
+        "title": "MeeSai — Laos' First Fashion Bank",
+        "description": "Rent brand-name outfits, hotel-grade clean, book easily on mobile"
+    },
+    "nav": {
+        "search_placeholder": "🔍 Wedding? Pink theme? Or brand-name dress?",
+        "wishlist": "Wishlist",
+        "rent_bag": "Rent Bag",
+        "login": "Sign In",
+        "register": "Register"
+    },
+    "hero": {
+        "slogan": "Can't find it anywhere? Come to MeeSai!",
+        "subtitle": "Laos' first Fashion Bank with over 1,000 brand-name outfits. Hotel-grade clean. Book easily on your phone.",
+        "cta_renter": "👗 Find an Outfit",
+        "cta_owner": "💼 Earn from Your Closet"
+    },
+    "booking": {
+        "event_date": "📅 Event Date",
+        "occasion": "👗 Occasion",
+        "size": "📏 Size",
+        "check_availability": "Check Availability Now",
+        "occasions": {
+            "wedding": "Wedding",
+            "traditional": "Traditional",
+            "gala": "Gala Night",
+            "mens": "Suit/Tuxedo",
+            "winter": "Winter Wear",
+            "accessories": "Accessories"
+        }
+    },
+    "feed": {
+        "title": "🔥 Available This Weekend",
+        "available": "Ready to ship",
+        "buy_price": "Buy Price",
+        "rent_price": "Rent Price",
+        "quick_book": "Quick Book",
+        "currency": "₭"
+    },
+    "trust": {
+        "title": "Why MeeSai?",
+        "hygiene_title": "Hotel-Grade Hygiene",
+        "hygiene_desc": "Professional dry cleaning and sanitization for every garment",
+        "buffer_title": "Buffer Time System",
+        "buffer_desc": "Guaranteed outfit readiness with automatic queue management",
+        "delivery_title": "Vientiane Express",
+        "delivery_desc": "Same-day delivery or Drive-thru pickup at our store"
+    },
+    "owner": {
+        "title": "Turn your closet into a savings account",
+        "subtitle": "List your beautiful outfits with us at 0% commission (zero GP). Earn full rental income while we handle everything.",
+        "cta": "Get a Free Asset Valuation"
+    },
+    "footer": {
+        "terms": "Penalty Policy",
+        "refund": "Refund Policy",
+        "insurance": "Insurance",
+        "tagline": "Infrastructure of Fashion"
+    },
+    "bottom_nav": {
+        "home": "Home",
+        "search": "Search",
+        "bookings": "Bookings",
+        "chat": "Chat",
+        "profile": "Profile"
+    }
+}
