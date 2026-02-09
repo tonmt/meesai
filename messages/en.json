@@ -51,6 +51,16 @@
         "delivery_title": "Express Delivery",
         "delivery_desc": "Express delivery or Drive-thru pickup at our store"
     },
+    "how": {
+        "title": "How It Works",
+        "subtitle": "Rent premium outfits in 3 simple steps",
+        "step1_title": "Choose Your Outfit",
+        "step1_desc": "Browse hundreds of premium outfits from trusted owners across Laos",
+        "step2_title": "Book & Pay Securely",
+        "step2_desc": "Reserve your dates and pay through our secure payment system",
+        "step3_title": "Wear & Shine",
+        "step3_desc": "Receive your outfit, look stunning at your event, and return it effortlessly"
+    },
     "owner": {
         "title": "Turn Your Closet into a Bank Account",
         "subtitle": "Bring your beautiful outfits you don't wear anymore. Earn passive income with 0% GP (no commission). We handle everything.",

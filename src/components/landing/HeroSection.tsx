@@ -4,25 +4,77 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Sparkles, ChevronDown, Shield, Zap, Award } from 'lucide-react';
 import Link from 'next/link';
 
-export default function HeroSection() {
+interface HeroStats {
+    productCount: number;
+    ownerCount: number;
+}
+
+export default function HeroSection({ stats }: { stats: HeroStats }) {
     const t = useTranslations();
     const locale = useLocale();
+
+    const displayStats = [
+        { value: `${stats.productCount || '100'}+`, labelLo: 'ຊຸດ', labelEn: 'Outfits' },
+        { value: `${stats.ownerCount || '10'}+`, labelLo: 'ເຈົ້າຂອງ', labelEn: 'Owners' },
+        { value: '0%', labelLo: 'ຄ່າຫົວຄິວ', labelEn: 'Commission' },
+    ];
 
     return (
         <section className="relative min-h-screen flex items-center overflow-hidden">
             {/* Light Background */}
             <div className="absolute inset-0 hero-bg-light">
                 <div className="absolute inset-0 gold-dots-pattern" />
-                {/* Decorative gold glow */}
                 <div className="absolute top-1/3 right-0 w-[600px] h-[600px] bg-champagne-gold/5 rounded-full blur-3xl" />
                 <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-champagne-gold/3 rounded-full blur-3xl" />
             </div>
 
-            {/* Content — Mobile: center, Desktop: split layout */}
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-4 pt-32 pb-40 lg:pt-28 lg:pb-32">
-                <div className="lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center">
+            {/* === MOBILE LAYOUT === */}
+            <div className="relative z-10 w-full max-w-7xl mx-auto px-4 pt-28 pb-36 lg:hidden">
+                <div className="text-center">
+                    {/* Badge */}
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full border border-champagne-gold/30 bg-champagne-gold/10 animate-fade-in-up">
+                        <Sparkles className="w-4 h-4 text-champagne-gold" />
+                        <span className="text-gold-dark text-sm font-medium">Fashion Bank of Laos</span>
+                    </div>
+
+                    {/* Main Slogan */}
+                    <h2 className="text-4xl sm:text-5xl font-bold mb-4 animate-fade-in-up" style={{ fontFamily: 'var(--font-serif-lao)', animationDelay: '0.2s' }}>
+                        <span className="text-royal-navy block mb-1">ຢູ່ໃສບໍ່ມີ...</span>
+                        <span className="text-gold-gradient">ມາພີ້ &lsquo;ມີໃສ່&rsquo;</span>
+                    </h2>
+
+                    {/* Subtitle */}
+                    <p className="text-navy-600 text-base max-w-sm mx-auto mb-8 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                        {t('hero.subtitle')}
+                    </p>
+
+                    {/* Single primary CTA button (mobile) */}
+                    <div className="animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+                        <Link href={`/${locale}/browse`} className="inline-block w-full max-w-xs px-8 py-4 bg-gradient-to-r from-champagne-gold to-gold-dark text-white font-bold rounded-full text-lg shadow-lg shadow-champagne-gold/25 active:scale-95 transition-transform text-center">
+                            {t('hero.cta_renter')}
+                        </Link>
+                        <Link href={`/${locale}/login`} className="mt-3 inline-block w-full max-w-xs px-8 py-3.5 border-2 border-royal-navy/15 text-royal-navy font-medium rounded-full text-base text-center active:scale-95 transition-all">
+                            {t('hero.cta_owner')}
+                        </Link>
+                    </div>
+
+                    {/* Stats strip */}
+                    <div className="flex items-center justify-center gap-6 mt-10 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+                        {displayStats.map((stat, i) => (
+                            <div key={i} className="text-center">
+                                <div className="text-xl font-bold text-champagne-gold">{stat.value}</div>
+                                <div className="text-navy-600 text-xs mt-0.5">{locale === 'lo' ? stat.labelLo : stat.labelEn}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* === DESKTOP LAYOUT === */}
+            <div className="relative z-10 w-full max-w-7xl mx-auto px-4 pt-28 pb-32 hidden lg:block">
+                <div className="grid grid-cols-2 gap-16 items-center">
                     {/* Left: Text */}
-                    <div className="text-center lg:text-left">
+                    <div className="text-left">
                         {/* Badge */}
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full border border-champagne-gold/30 bg-champagne-gold/10 animate-fade-in-up">
                             <Sparkles className="w-4 h-4 text-champagne-gold" />
@@ -30,43 +82,39 @@ export default function HeroSection() {
                         </div>
 
                         {/* Main Slogan */}
-                        <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 animate-fade-in-up" style={{ fontFamily: 'var(--font-serif-lao)', animationDelay: '0.2s' }}>
+                        <h2 className="text-6xl xl:text-7xl 2xl:text-8xl font-bold mb-6 animate-fade-in-up" style={{ fontFamily: 'var(--font-serif-lao)', animationDelay: '0.2s' }}>
                             <span className="text-royal-navy block mb-2">ຢູ່ໃສບໍ່ມີ...</span>
                             <span className="text-gold-gradient">ມາພີ້ &lsquo;ມີໃສ່&rsquo;</span>
                         </h2>
 
                         {/* Subtitle */}
-                        <p className="text-navy-600 text-lg md:text-xl max-w-2xl mx-auto lg:mx-0 mb-10 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                        <p className="text-navy-600 text-xl max-w-2xl mb-10 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                             {t('hero.subtitle')}
                         </p>
 
                         {/* Dual CTA */}
-                        <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-                            <Link href={`/${locale}/browse`} className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-champagne-gold to-gold-dark text-white font-bold rounded-full text-lg hover:shadow-[0_0_30px_rgba(212,175,55,0.3)] transition-all duration-300 transform hover:scale-105 animate-pulse-gold text-center">
+                        <div className="flex items-start gap-4 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+                            <Link href={`/${locale}/browse`} className="px-8 py-4 bg-gradient-to-r from-champagne-gold to-gold-dark text-white font-bold rounded-full text-lg hover:shadow-[0_0_30px_rgba(212,175,55,0.3)] transition-all duration-300 transform hover:scale-105 animate-pulse-gold text-center">
                                 {t('hero.cta_renter')}
                             </Link>
-                            <Link href={`/${locale}/login`} className="w-full sm:w-auto px-8 py-4 border-2 border-royal-navy/20 text-royal-navy font-medium rounded-full text-lg hover:border-champagne-gold hover:text-champagne-gold transition-all duration-300 text-center">
+                            <Link href={`/${locale}/login`} className="px-8 py-4 border-2 border-royal-navy/20 text-royal-navy font-medium rounded-full text-lg hover:border-champagne-gold hover:text-champagne-gold transition-all duration-300 text-center">
                                 {t('hero.cta_owner')}
                             </Link>
                         </div>
 
                         {/* Stats */}
-                        <div className="flex items-center justify-center lg:justify-start gap-8 mt-12 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
-                            {[
-                                { value: '1,000+', labelLo: 'ຊຸດ', labelEn: 'Outfits' },
-                                { value: '500+', labelLo: 'ເຈົ້າຂອງ', labelEn: 'Owners' },
-                                { value: '0%', labelLo: 'ຄ່າຫົວຄິວ', labelEn: 'Commission' },
-                            ].map((stat, i) => (
-                                <div key={i} className="text-center lg:text-left">
-                                    <div className="text-2xl md:text-3xl font-bold text-champagne-gold">{stat.value}</div>
-                                    <div className="text-navy-600 text-xs mt-1">{stat.labelLo}</div>
+                        <div className="flex items-center gap-8 mt-12 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+                            {displayStats.map((stat, i) => (
+                                <div key={i} className="text-left">
+                                    <div className="text-2xl xl:text-3xl font-bold text-champagne-gold">{stat.value}</div>
+                                    <div className="text-navy-600 text-xs mt-1">{locale === 'lo' ? stat.labelLo : stat.labelEn}</div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    {/* Right: Feature showcase (Desktop only) */}
-                    <div className="hidden lg:flex flex-col items-center justify-center">
+                    {/* Right: Feature showcase card */}
+                    <div className="flex flex-col items-center justify-center">
                         <div className="relative w-full max-w-md">
                             <div className="relative">
                                 {/* Back card */}

@@ -63,3 +63,11 @@ export async function getCategories() {
         },
     })
 }
+
+export async function getLandingStats() {
+    const [productCount, ownerCount] = await Promise.all([
+        prisma.product.count(),
+        prisma.user.count({ where: { role: 'OWNER' } }),
+    ])
+    return { productCount, ownerCount }
+}
