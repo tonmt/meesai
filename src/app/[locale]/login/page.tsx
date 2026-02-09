@@ -7,7 +7,7 @@ import { Phone, Lock, User, Eye, EyeOff, ArrowLeft, Loader2 } from 'lucide-react
 import { registerUser, loginUser } from '@/actions/auth';
 
 export default function LoginPage() {
-    const t = useTranslations();
+    const t = useTranslations('login');
     const locale = useLocale();
     const router = useRouter();
     const [mode, setMode] = useState<'login' | 'register'>('login');
@@ -43,7 +43,7 @@ export default function LoginPage() {
                 }
             }
         } catch {
-            setError(locale === 'lo' ? 'ເກີດຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່' : 'An error occurred');
+            setError(t('error'));
         } finally {
             setLoading(false);
         }
@@ -61,10 +61,7 @@ export default function LoginPage() {
                             ມີໃສ່
                         </h1>
                         <p className="text-navy-600 text-sm">
-                            {mode === 'login'
-                                ? (locale === 'lo' ? 'ເຂົ້າສູ່ລະບົບ' : 'Sign In')
-                                : (locale === 'lo' ? 'ສະໝັກສະມາຊິກ' : 'Create Account')
-                            }
+                            {mode === 'login' ? t('sign_in') : t('create_account')}
                         </p>
                     </div>
 
@@ -85,7 +82,7 @@ export default function LoginPage() {
                         {mode === 'register' && (
                             <div>
                                 <label className="block text-sm font-medium text-navy-600 mb-1.5">
-                                    {locale === 'lo' ? 'ຊື່' : 'Name'}
+                                    {t('name')}
                                 </label>
                                 <div className="relative">
                                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -93,7 +90,7 @@ export default function LoginPage() {
                                         name="name"
                                         type="text"
                                         required
-                                        placeholder={locale === 'lo' ? 'ຊື່ ແລະ ນາມສະກຸນ' : 'Full Name'}
+                                        placeholder={t('name_placeholder')}
                                         className="w-full pl-10 pr-4 py-3 bg-white/80 border border-gray-200 rounded-xl text-sm text-royal-navy placeholder:text-gray-400 focus:outline-none focus:border-champagne-gold focus:ring-2 focus:ring-champagne-gold/20 transition-all"
                                     />
                                 </div>
@@ -102,7 +99,7 @@ export default function LoginPage() {
 
                         <div>
                             <label className="block text-sm font-medium text-navy-600 mb-1.5">
-                                {locale === 'lo' ? 'ເບີໂທລະສັບ' : 'Phone Number'}
+                                {t('phone')}
                             </label>
                             <div className="relative">
                                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -118,7 +115,7 @@ export default function LoginPage() {
 
                         <div>
                             <label className="block text-sm font-medium text-navy-600 mb-1.5">
-                                {locale === 'lo' ? 'ລະຫັດຜ່ານ' : 'Password'}
+                                {t('password')}
                             </label>
                             <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -127,7 +124,7 @@ export default function LoginPage() {
                                     type={showPassword ? 'text' : 'password'}
                                     required
                                     minLength={6}
-                                    placeholder={locale === 'lo' ? 'ຢ່າງໜ້ອຍ 6 ຕົວ' : 'Min 6 characters'}
+                                    placeholder={t('password_placeholder')}
                                     className="w-full pl-10 pr-10 py-3 bg-white/80 border border-gray-200 rounded-xl text-sm text-royal-navy placeholder:text-gray-400 focus:outline-none focus:border-champagne-gold focus:ring-2 focus:ring-champagne-gold/20 transition-all"
                                 />
                                 <button
@@ -143,7 +140,7 @@ export default function LoginPage() {
                         {mode === 'register' && (
                             <div>
                                 <label className="block text-sm font-medium text-navy-600 mb-1.5">
-                                    {locale === 'lo' ? 'ຢືນຢັນລະຫັດຜ່ານ' : 'Confirm Password'}
+                                    {t('confirm_password')}
                                 </label>
                                 <div className="relative">
                                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -152,7 +149,7 @@ export default function LoginPage() {
                                         type={showPassword ? 'text' : 'password'}
                                         required
                                         minLength={6}
-                                        placeholder={locale === 'lo' ? 'ກອກລະຫັດອີກຄັ້ງ' : 'Re-enter password'}
+                                        placeholder={t('confirm_placeholder')}
                                         className="w-full pl-10 pr-4 py-3 bg-white/80 border border-gray-200 rounded-xl text-sm text-royal-navy placeholder:text-gray-400 focus:outline-none focus:border-champagne-gold focus:ring-2 focus:ring-champagne-gold/20 transition-all"
                                     />
                                 </div>
@@ -166,10 +163,7 @@ export default function LoginPage() {
                             className="w-full py-3 bg-champagne-gold text-royal-navy font-bold rounded-xl text-base hover:bg-champagne-gold/90 transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-champagne-gold/20"
                         >
                             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                            {mode === 'login'
-                                ? (locale === 'lo' ? 'ເຂົ້າສູ່ລະບົບ' : 'Sign In')
-                                : (locale === 'lo' ? 'ສະໝັກສະມາຊິກ' : 'Create Account')
-                            }
+                            {mode === 'login' ? t('sign_in') : t('create_account')}
                         </button>
                     </form>
 
@@ -177,7 +171,7 @@ export default function LoginPage() {
                     <div className="flex items-center gap-3 my-6">
                         <div className="flex-1 h-px bg-gray-200" />
                         <span className="text-xs text-gray-400">
-                            {locale === 'lo' ? 'ຫຼື' : 'or'}
+                            {t('or')}
                         </span>
                         <div className="flex-1 h-px bg-gray-200" />
                     </div>
@@ -187,18 +181,13 @@ export default function LoginPage() {
                         onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); setSuccess(''); }}
                         className="w-full py-3 bg-white border border-gray-200 text-navy-600 font-medium rounded-xl text-sm hover:border-champagne-gold hover:text-champagne-gold transition-all"
                     >
-                        {mode === 'login'
-                            ? (locale === 'lo' ? 'ຍັງບໍ່ມີບັນຊີ? ສະໝັກເລີຍ' : "Don't have an account? Sign Up")
-                            : (locale === 'lo' ? 'ມີບັນຊີແລ້ວ? ເຂົ້າສູ່ລະບົບ' : 'Already have an account? Sign In')
-                        }
+                        {mode === 'login' ? t('no_account') : t('has_account')}
                     </button>
                 </div>
 
                 {/* Footer */}
                 <p className="text-center text-xs text-navy-600/60 mt-6">
-                    {locale === 'lo'
-                        ? 'ໂດຍການລົງທະບຽນ ທ່ານຍອมຮັບເງື່ອນໄຂຂອງ MeeSai'
-                        : 'By signing up, you agree to MeeSai Terms of Service'}
+                    {t('terms')}
                 </p>
             </div>
         </div>
