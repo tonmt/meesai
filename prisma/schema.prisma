@@ -92,6 +92,7 @@ model User {
   wallet          Wallet?
   evidenceRecords EvidenceLog[] // Evidence ที่ Staff บันทึก
   statusChanges   StatusTransition[] // Status ที่ Staff เปลี่ยน
+  notifications   Notification[] // In-app notifications
 
   @@map("users")
 }
@@ -321,4 +322,24 @@ model SystemConfig {
   note  String?
 
   @@map("system_configs")
+}
+
+// ═══════════════════════════════════════════════════
+// เสาที่ 9: Notifications — In-app bell
+// ═══════════════════════════════════════════════════
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String   // BOOKING_CONFIRMED, BOOKING_CANCELLED, PAYOUT_DONE, etc.
+  title     String
+  body      String
+  link      String?  // Optional deep-link e.g. /lo/bookings
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now())
+
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead])
+  @@map("notifications")
 }

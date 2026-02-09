@@ -1,9 +1,9 @@
 {
     "turn": "reviewer",
-    "sprint": "5.2",
-    "feature": "Unified Navigation + User Profile",
-    "lastUpdate": "2026-02-09T22:15:00+07:00",
+    "sprint": "6.0",
+    "feature": "Navigation + Profile + Notification Bell",
+    "lastUpdate": "2026-02-09T22:20:00+07:00",
     "cycle": 0,
     "lastVerdict": "PENDING",
-    "directorNote": "Sprint 5.0 + 5.2 ส่งมอบ — Navigation + Profile page + Login cleanup — พร้อม review"
+    "directorNote": "Sprint 5+6 ส่งมอบทั้งหมด — Navigation + Profile + Notification Bell — พร้อม review"
 }

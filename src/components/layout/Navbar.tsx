@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Menu, X, LogOut, Package, Shield, ClipboardList, ShoppingBag, Search, ChevronDown, User } from 'lucide-react'
 
+import NotificationBell from './NotificationBell'
+
 export default function Navbar() {
     const { data: session } = useSession()
     const params = useParams()
@@ -63,47 +65,50 @@ export default function Navbar() {
                     {/* Right Side */}
                     <div className="flex items-center gap-2">
                         {session?.user ? (
-                            <div className="relative">
-                                <button
-                                    onClick={() => setProfileOpen(!profileOpen)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors"
-                                >
-                                    <div className="w-7 h-7 rounded-full bg-champagne-gold/20 flex items-center justify-center text-xs font-bold text-champagne-gold">
-                                        {session.user.name?.charAt(0) || '?'}
-                                    </div>
-                                    <span className="text-sm font-medium text-royal-navy hidden sm:inline max-w-[80px] truncate">
-                                        {session.user.name}
-                                    </span>
-                                    <ChevronDown className="w-3 h-3 text-gray-400" />
-                                </button>
-
-                                {profileOpen && (
-                                    <>
-                                        <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
-                                        <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 py-1">
-                                            <div className="px-4 py-2 border-b border-gray-50">
-                                                <p className="text-sm font-bold text-royal-navy">{session.user.name}</p>
-                                                <span className="text-[10px] font-bold text-champagne-gold bg-champagne-gold/10 px-2 py-0.5 rounded-full">{role}</span>
-                                            </div>
-                                            <Link
-                                                href={`/${locale}/account`}
-                                                onClick={() => setProfileOpen(false)}
-                                                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-navy-600 hover:bg-royal-navy/5 transition-colors"
-                                            >
-                                                <User className="w-4 h-4" />
-                                                {locale === 'lo' ? 'ບັນຊີຂອງຂ້ອຍ' : 'My Account'}
-                                            </Link>
-                                            <button
-                                                onClick={() => signOut({ callbackUrl: `/${locale}/login` })}
-                                                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
-                                            >
-                                                <LogOut className="w-4 h-4" />
-                                                {locale === 'lo' ? 'ອອກຈາກລະບົບ' : 'Sign Out'}
-                                            </button>
+                            <>
+                                <NotificationBell />
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setProfileOpen(!profileOpen)}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors"
+                                    >
+                                        <div className="w-7 h-7 rounded-full bg-champagne-gold/20 flex items-center justify-center text-xs font-bold text-champagne-gold">
+                                            {session.user.name?.charAt(0) || '?'}
                                         </div>
-                                    </>
-                                )}
-                            </div>
+                                        <span className="text-sm font-medium text-royal-navy hidden sm:inline max-w-[80px] truncate">
+                                            {session.user.name}
+                                        </span>
+                                        <ChevronDown className="w-3 h-3 text-gray-400" />
+                                    </button>
+
+                                    {profileOpen && (
+                                        <>
+                                            <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
+                                            <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 z-50 py-1">
+                                                <div className="px-4 py-2 border-b border-gray-50">
+                                                    <p className="text-sm font-bold text-royal-navy">{session.user.name}</p>
+                                                    <span className="text-[10px] font-bold text-champagne-gold bg-champagne-gold/10 px-2 py-0.5 rounded-full">{role}</span>
+                                                </div>
+                                                <Link
+                                                    href={`/${locale}/account`}
+                                                    onClick={() => setProfileOpen(false)}
+                                                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-navy-600 hover:bg-royal-navy/5 transition-colors"
+                                                >
+                                                    <User className="w-4 h-4" />
+                                                    {locale === 'lo' ? 'ບັນຊີຂອງຂ້ອຍ' : 'My Account'}
+                                                </Link>
+                                                <button
+                                                    onClick={() => signOut({ callbackUrl: `/${locale}/login` })}
+                                                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"
+                                                >
+                                                    <LogOut className="w-4 h-4" />
+                                                    {locale === 'lo' ? 'ອອກຈາກລະບົບ' : 'Sign Out'}
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </>
                         ) : (
                             <Link
                                 href={`/${locale}/login`}
