@@ -2,7 +2,7 @@
 
 import { z } from 'zod'
 import { auth } from '@/lib/auth'
-import { createBooking, cancelBooking, checkAvailability } from '@/lib/booking'
+import { createBooking, cancelBooking, checkAvailability, getSystemConfig } from '@/lib/booking'
 import { prisma } from '@/lib/prisma'
 
 // ─── Zod Schemas ───
@@ -25,13 +25,11 @@ type BookingActionResult = {
  * Server Action: สร้าง booking ใหม่
  */
 export async function createBookingAction(formData: FormData): Promise<BookingActionResult> {
-    // Auth check
     const session = await auth()
     if (!session?.user?.id) {
         return { success: false, error: 'ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນ' }
     }
 
-    // Zod validation
     const raw = {
         assetId: formData.get('assetId') as string,
         eventDate: formData.get('eventDate') as string,
@@ -47,7 +45,6 @@ export async function createBookingAction(formData: FormData): Promise<BookingAc
 
     const { assetId, eventDate, pickupDate, returnDate, notes } = parsed.data
 
-    // Get asset rental price
     const asset = await prisma.itemAsset.findUnique({
         where: { id: assetId },
         include: { product: { select: { rentalPrice: true } } },
@@ -64,7 +61,7 @@ export async function createBookingAction(formData: FormData): Promise<BookingAc
         pickupDate,
         returnDate,
         rentalFee: asset.product.rentalPrice,
-        deposit: Math.round(asset.product.rentalPrice * 0.3), // 30% deposit
+        deposit: Math.round(asset.product.rentalPrice * 0.3),
         notes,
     })
 
@@ -72,7 +69,7 @@ export async function createBookingAction(formData: FormData): Promise<BookingAc
 }
 
 /**
- * Server Action: ยกเลิก booking
+ * Server Action: ยกเลิก booking (with ownership check)
  */
 export async function cancelBookingAction(bookingId: string): Promise<BookingActionResult> {
     const session = await auth()
@@ -80,7 +77,13 @@ export async function cancelBookingAction(bookingId: string): Promise<BookingAct
         return { success: false, error: 'ກະລຸນາເຂົ້າສູ່ລະບົບກ່ອນ' }
     }
 
-    return cancelBooking(bookingId, session.user.id, 'User cancelled')
+    // Pass user role for authorization check in cancelBooking
+    const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { role: true },
+    })
+
+    return cancelBooking(bookingId, session.user.id, user?.role || 'RENTER', 'User cancelled')
 }
 
 /**
@@ -131,4 +134,12 @@ export async function getProductDetail(productId: string) {
             },
         },
     })
+}
+
+/**
+ * Server Action: ดึง service fee percent จาก SystemConfig
+ */
+export async function getServiceFeePercent(): Promise<number> {
+    const val = await getSystemConfig('SERVICE_FEE_PERCENT')
+    return val ? parseInt(val, 10) : 15
 }

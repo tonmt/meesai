@@ -2,17 +2,14 @@
  * MeeSai Booking — Availability Check + Create
  *
  * Pillar 1: Concurrency Control
- * - prisma.$transaction() สำหรับ availability check + insert
- * - bufferEnd = returnDate + BUFFER_DAYS
+ * - prisma.$transaction() สำหรับ availability check + insert + FSM transition
+ * - bufferEnd = returnDate + BUFFER_DAYS (from SystemConfig)
  * - @@index([assetId, pickupDate, bufferEnd]) สำหรับ fast query
  */
 
 import { prisma } from '@/lib/prisma'
-import { transitionAssetStatus } from '@/lib/fsm'
 import { nanoid } from 'nanoid'
-
-const BUFFER_DAYS = 2  // วันพักชุด (ซักอบรีด) หลังคืน
-const SERVICE_FEE_PERCENT = 10  // 10% ของค่าเช่า
+import type { Prisma } from '@prisma/client'
 
 export type BookingInput = {
     assetId: string
@@ -32,6 +29,18 @@ export type BookingResult = {
     qrCode?: string
 }
 
+// ─── System Config Helpers ───
+
+async function getBufferDays(): Promise<number> {
+    const config = await prisma.systemConfig.findUnique({ where: { key: 'BUFFER_DAYS' } })
+    return config ? parseInt(config.value, 10) : 3
+}
+
+async function getServiceFeePercent(): Promise<number> {
+    const config = await prisma.systemConfig.findUnique({ where: { key: 'SERVICE_FEE_PERCENT' } })
+    return config ? parseInt(config.value, 10) : 15
+}
+
 /**
  * Check if an asset is available for a given date range.
  * Considers buffer time between bookings.
@@ -41,15 +50,14 @@ export async function checkAvailability(
     pickupDate: Date,
     returnDate: Date
 ): Promise<{ available: boolean; conflictCount: number }> {
-    const bufferEnd = addDays(returnDate, BUFFER_DAYS)
+    const bufferDays = await getBufferDays()
+    const bufferEnd = addDays(returnDate, bufferDays)
 
-    // ค้นหา booking ที่ overlap กับช่วงที่ต้องการ
     const conflicts = await prisma.booking.count({
         where: {
             assetId,
             status: { in: ['PENDING', 'CONFIRMED', 'PICKED_UP'] },
             OR: [
-                // Case 1: booking เดิมเริ่มก่อนและจบหลังเราเริ่ม
                 { pickupDate: { lte: bufferEnd }, bufferEnd: { gte: pickupDate } },
             ],
         },
@@ -60,7 +68,7 @@ export async function checkAvailability(
 
 /**
  * Create a booking with full concurrency control.
- * Uses $transaction to prevent double booking.
+ * FSM transition is INSIDE $transaction to prevent race conditions.
  */
 export async function createBooking(input: BookingInput): Promise<BookingResult> {
     const { assetId, renterId, eventDate, pickupDate, returnDate, rentalFee, deposit = 0, notes } = input
@@ -73,12 +81,14 @@ export async function createBooking(input: BookingInput): Promise<BookingResult>
         return { success: false, error: 'ບໍ່ສາມາດຈອງໃນອະດີດໄດ້' }
     }
 
-    const bufferEnd = addDays(returnDate, BUFFER_DAYS)
-    const serviceFee = Math.round(rentalFee * SERVICE_FEE_PERCENT / 100)
+    const bufferDays = await getBufferDays()
+    const servicePercent = await getServiceFeePercent()
+    const bufferEnd = addDays(returnDate, bufferDays)
+    const serviceFee = Math.round(rentalFee * servicePercent / 100)
     const qrCode = `MSB-${nanoid(10)}`
 
     try {
-        const booking = await prisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx) => {
             // 1. Check asset exists and is AVAILABLE
             const asset = await tx.itemAsset.findUnique({
                 where: { id: assetId },
@@ -124,15 +134,29 @@ export async function createBooking(input: BookingInput): Promise<BookingResult>
                 },
             })
 
+            // 4. FSM Transition: AVAILABLE → RESERVED (INSIDE $transaction!)
+            await tx.itemAsset.update({
+                where: { id: assetId },
+                data: { status: 'RESERVED' },
+            })
+
+            // 5. Audit log (Pillar 5)
+            await tx.statusTransition.create({
+                data: {
+                    assetId,
+                    fromState: 'AVAILABLE',
+                    toState: 'RESERVED',
+                    changedById: renterId,
+                    reason: `Booking ${newBooking.id}`,
+                },
+            })
+
             return newBooking
         })
 
-        // 4. Transition asset → RESERVED (outside main transaction for FSM audit)
-        await transitionAssetStatus(assetId, 'RESERVED', renterId, `Booking ${booking.id}`)
-
         return {
             success: true,
-            bookingId: booking.id,
+            bookingId: result.id,
             qrCode,
         }
     } catch (error) {
@@ -143,10 +167,12 @@ export async function createBooking(input: BookingInput): Promise<BookingResult>
 
 /**
  * Cancel a booking and release the asset.
+ * Authorization: only the renter who made the booking (or ADMIN) can cancel.
  */
 export async function cancelBooking(
     bookingId: string,
     cancelledById: string,
+    cancelledByRole: string,
     reason?: string
 ): Promise<BookingResult> {
     try {
@@ -159,18 +185,45 @@ export async function cancelBooking(
             return { success: false, error: 'ບໍ່ພົບການຈອງ' }
         }
 
+        // Authorization Check (MUST #2)
+        if (booking.renterId !== cancelledById && cancelledByRole !== 'ADMIN') {
+            return { success: false, error: 'ທ່ານບໍ່ມີສິດຍົກເລີກການຈອງນີ້' }
+        }
+
         if (!['PENDING', 'CONFIRMED'].includes(booking.status)) {
             return { success: false, error: 'ບໍ່ສາມາດຍົກເລີກການຈອງນີ້ໄດ້' }
         }
 
-        // Update booking status
-        await prisma.booking.update({
-            where: { id: bookingId },
-            data: { status: 'CANCELLED' },
-        })
+        // Cancel booking + release asset in $transaction
+        await prisma.$transaction(async (tx) => {
+            await tx.booking.update({
+                where: { id: bookingId },
+                data: { status: 'CANCELLED' },
+            })
 
-        // Release asset → AVAILABLE
-        await transitionAssetStatus(booking.assetId, 'AVAILABLE', cancelledById, reason || `Cancelled booking ${bookingId}`)
+            // Get current asset status
+            const asset = await tx.itemAsset.findUnique({
+                where: { id: booking.assetId },
+                select: { status: true },
+            })
+
+            if (asset && asset.status === 'RESERVED') {
+                await tx.itemAsset.update({
+                    where: { id: booking.assetId },
+                    data: { status: 'AVAILABLE' },
+                })
+
+                await tx.statusTransition.create({
+                    data: {
+                        assetId: booking.assetId,
+                        fromState: 'RESERVED',
+                        toState: 'AVAILABLE',
+                        changedById: cancelledById,
+                        reason: reason || `Cancelled booking ${bookingId}`,
+                    },
+                })
+            }
+        })
 
         return { success: true, bookingId }
     } catch (error) {
@@ -188,7 +241,7 @@ function addDays(date: Date, days: number): Date {
 }
 
 /**
- * Get system config value (e.g., BUFFER_DAYS, SERVICE_FEE_PERCENT)
+ * Get system config value
  */
 export async function getSystemConfig(key: string): Promise<string | null> {
     const config = await prisma.systemConfig.findUnique({ where: { key } })
