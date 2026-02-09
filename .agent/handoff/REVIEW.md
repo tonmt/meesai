@@ -1,91 +1,46 @@
-# 📋 REVIEW — Sprint 4.1 + 4.2: Owner/Admin Dashboard + Staff Panel
+# 📋 REVIEW — Sprint 4.1 + 4.2 Cycle 2: Owner/Admin/Staff — MUST Fix Verification
 
-> MeeSai Director (Reviewer Agent) · 2026-02-09 21:45 · Cycle 1
+> MeeSai Director (Reviewer Agent) · 2026-02-09 21:50 · Cycle 2
 
-## Verdict: 🟡 REVISE
-
-**ภาพรวม:** Staff Panel ทำได้ยอดเยี่ยม! check-in/out flow ถูกต้อง 100% ตาม business logic, ทุก operation ใน `$transaction`, EvidenceLog + StatusTransition ครบทุก Pillar.
-
-**แต่ MUST #1 จาก Cycle ก่อนยังไม่ถูกแก้** — ต้อง REVISE อีกครั้ง
+## Verdict: � APPROVED
 
 ---
 
-## 🔴 MUST FIX (1 item — ค้างจาก Cycle 1)
+## MUST #1 Fix — ✅ VERIFIED
 
-### MUST #1: `getWalletBalance()` — userId vs walletId confusion
+| Location | Before (❌) | After (✅) |
+|:---------|:-----------|:----------|
+| `owner.ts` L50 | `getWalletBalance(session.user.id)` | `wallet ? getWalletBalance(wallet.id) : 0` |
+| `owner.ts` L175 | `getWalletBalance(session.user.id)` | `getWalletBalance(wallet.id)` — wallet lookup moved before balance check |
 
-**ไฟล์:** `src/actions/owner.ts`
-
-```typescript
-// ❌ Line 45 — ยังส่ง userId (ไม่ใช่ walletId)
-const balance = await getWalletBalance(session.user.id)
-
-// ❌ Line 168 — เหมือนกัน
-const balance = await getWalletBalance(session.user.id)
-```
-
-**ต้องแก้เป็น:**
-```diff
-// Line 40-50: getOwnerRevenueSummary()
-- const balance = await getWalletBalance(session.user.id)
-  const wallet = await prisma.wallet.findUnique({
-      where: { userId: session.user.id },
-  })
-+ const balance = wallet ? await getWalletBalance(wallet.id) : 0
-
-// Line 154-178: requestPayoutAction()
-  const wallet = await prisma.wallet.findUnique({...})
-  if (!wallet) return { success: false, error: '...' }
-- const balance = await getWalletBalance(session.user.id)
-+ const balance = await getWalletBalance(wallet.id)
-```
-
-> ⚠️ Bug นี้ทำให้ Owner Wallet แสดง **balance = 0 ตลอด** + Payout request จะ **reject ทุกครั้ง**
+**Impact:** Owner Wallet balance + Payout request ทำงานถูกต้องแล้ว ✅
 
 ---
 
-## ✅ Staff Panel (Sprint 4.2) — ยอดเยี่ยม
+## Sprint 4 Summary — COMPLETE 🎉
 
-### Check-out Flow ✅
-```
-CONFIRMED → PICKED_UP (booking) + Asset → PICKED_UP
-  + StatusTransition (from: RESERVED → to: PICKED_UP)
-  + EvidenceLog (type: CHECK_OUT)
-```
-- Auth guard: STAFF/ADMIN ✅
-- Booking validation: status === CONFIRMED ✅
-- Asset validation: booking.assetId match ✅
-- `$transaction` atomic ✅
+| Sprint | Feature | Verdict |
+|:-------|:--------|:--------|
+| 4.1 | Owner Dashboard (4 tabs) + Admin Dashboard (4 tabs) | 🟢 APPROVED (C2) |
+| 4.2 | Staff Panel (check-in/out + barcode lookup) | 🟢 APPROVED |
 
-### Check-in Flow ✅
-```
-GOOD path:  PICKED_UP → RETURNED → COMPLETED + Asset → AVAILABLE + Deposit Refund + rentalCount++
-DAMAGED path: PICKED_UP → RETURNED + Asset → MAINTENANCE + DamageReport EvidenceLog
-```
-- Two-path branching (GOOD/DAMAGED) ✅
-- Deposit refund inline (ไม่ต้องเรียก ledger.refundDeposit — ยังถูก เพราะอยู่ใน tx เดียวกัน) ✅
-- `totalRentals` increment ✅
-- หลายครั้ง StatusTransition ใน 1 tx (PICKED_UP → RETURNED → AVAILABLE) ✅
+### Three Portals Delivered
+- 🏪 **Owner** (`/owner`) — สินค้า, รายได้, ถอนเงิน, ประวัติ
+- ⚙️ **Admin** (`/admin`) — users, bookings, revenue, platform stats
+- 📋 **Staff** (`/staff`) — check-out/in, barcode lookup, today's schedule
 
-### Today's Schedule ✅
-- ดึง CONFIRMED (pickupDate = today) + PICKED_UP (returnDate = today หรือ active ทั้งหมด) ✅
-
-### Security ✅
-- ทุก action: `['STAFF', 'ADMIN'].includes(role)` ✅
-- Staff page: role guard in page.tsx ✅
+### All 5 Pillars Active
+1. **Concurrency:** `$transaction` ทุก mutation ✅
+2. **FSM:** check-in branching (GOOD→AVAILABLE / DAMAGED→MAINTENANCE) ✅
+3. **Inventory ID:** barcode/assetCode lookup ✅
+4. **Double-Entry:** payout = `sourceWalletId` debit + payout record ✅
+5. **Audit Trail:** StatusTransition + EvidenceLog ทุก check-in/out ✅
 
 ---
 
-## Admin + Owner Dashboard — ✅ ผ่าน (ยกเว้น MUST #1)
+## Next Sprint: 5.0 — Notification + StickyHeader Nav Integration
 
-ตรวจแล้วเหมือน Cycle 1 — โครงสร้างถูกต้อง
-
----
-
-## สรุป
-
-| # | Item | Severity | Status |
-|:--|:-----|:---------|:-------|
-| 1 | `getWalletBalance(userId)` → `getWalletBalance(walletId)` | 🔴 MUST | ❌ ยังไม่แก้ (Cycle 1+2) |
-
-**กรุณาแก้ MUST #1 เท่านั้น — ไม่ต้องแก้อย่างอื่น. แก้ 2 บรรทัดใน `owner.ts` แค่นั้นพอ**
+แนะนำ:
+1. StickyHeader links — เชื่อม Owner/Admin/Staff ตาม role
+2. Notification system — booking confirmed, payment received, check-in reminder
+3. Role-based BottomNav — Renter/Owner/Staff/Admin แสดงเมนูต่างกัน
