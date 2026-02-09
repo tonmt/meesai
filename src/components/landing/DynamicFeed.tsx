@@ -3,6 +3,7 @@
 import { useTranslations, useLocale } from 'next-intl';
 import { Heart, ArrowRight, Shirt, SlidersHorizontal, X, Lock } from 'lucide-react';
 import { useState } from 'react';
+import Link from 'next/link';
 import type { FeedProduct } from '@/actions/products';
 
 type Category = {
@@ -43,9 +44,13 @@ export default function DynamicFeed({ products, categories }: Props) {
                     <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-royal-navy" style={{ fontFamily: 'var(--font-serif-lao)' }}>
                         {t('feed.title')}
                     </h3>
-                    <button className="flex items-center gap-1 text-champagne-gold hover:underline text-sm font-medium">
+                    <button
+                        disabled
+                        title={locale === 'lo' ? 'ເປີດໃຊ້ໃນ Sprint 4' : 'Coming Sprint 4'}
+                        className="flex items-center gap-1 text-gray-400 text-sm font-medium cursor-not-allowed"
+                    >
+                        <Lock className="w-3 h-3" />
                         <span>{locale === 'lo' ? 'ເບິ່ງທັງໝົດ' : 'View All'}</span>
-                        <ArrowRight className="w-4 h-4" />
                     </button>
                 </div>
 
@@ -186,14 +191,12 @@ export default function DynamicFeed({ products, categories }: Props) {
                                                 {formatPrice(item.rentalPrice)} {t('feed.currency')}
                                             </span>
                                         </div>
-                                        <button
-                                            disabled
-                                            title={locale === 'lo' ? 'ເປີດໃຫ້ບໍລິການໃນ Sprint 4' : 'Coming in Sprint 4'}
-                                            className="w-full mt-3 py-2 bg-royal-navy/50 text-white/70 text-sm font-medium rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5"
+                                        <Link
+                                            href={`/${locale}/booking/${item.id}`}
+                                            className="w-full mt-3 py-2 bg-royal-navy text-white text-sm font-medium rounded-xl hover:bg-champagne-gold hover:text-royal-navy transition-all duration-300 flex items-center justify-center gap-1.5"
                                         >
-                                            <Lock className="w-3 h-3" />
                                             {t('feed.quick_book')}
-                                        </button>
+                                        </Link>
                                     </div>
                                 </div>
                             ))

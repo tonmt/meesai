@@ -28,8 +28,8 @@ export default function LoginPage() {
             if (mode === 'register') {
                 const result = await registerUser(formData);
                 if (result.success) {
-                    setSuccess(locale === 'lo' ? 'ສະໝັກສຳເລັດ! ກະລຸນາເຂົ້າສູ່ລະບົບ' : 'Registration successful! Please login');
-                    setMode('login');
+                    router.push(`/${locale}`);
+                    router.refresh();
                 } else {
                     setError(result.error || 'Error');
                 }
