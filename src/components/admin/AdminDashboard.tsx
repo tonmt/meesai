@@ -186,44 +186,98 @@ export default function AdminDashboard({ stats, users, bookings, transactions, l
 
             {/* === BOOKINGS TAB === */}
             {activeTab === 'bookings' && (
-                <div className="space-y-3">
-                    {bookings.map(b => (
-                        <div key={b.id} className="glass rounded-2xl p-4 border border-white/60">
-                            <div className="flex items-start justify-between">
-                                <div className="flex gap-3">
-                                    <div className="w-12 h-12 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
-                                        {b.asset.product.images[0] ? (
-                                            <img src={b.asset.product.images[0]} alt="" className="w-full h-full object-cover" />
-                                        ) : (
-                                            <Package className="w-5 h-5 m-3.5 text-gray-300" />
-                                        )}
+                <>
+                    {/* Desktop Table */}
+                    <div className="hidden md:block glass rounded-2xl border border-white/60 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="bg-royal-navy/5 text-royal-navy text-xs">
+                                        <th className="text-left px-4 py-3 font-medium">{locale === 'lo' ? 'ສິນຄ້າ' : 'Product'}</th>
+                                        <th className="text-left px-4 py-3 font-medium">{locale === 'lo' ? 'ລະຫັດ' : 'Code'}</th>
+                                        <th className="text-left px-4 py-3 font-medium">{locale === 'lo' ? 'ຜູ້ເຊົ່າ' : 'Renter'}</th>
+                                        <th className="text-left px-4 py-3 font-medium">{locale === 'lo' ? 'ເຈົ້າຂອງ' : 'Owner'}</th>
+                                        <th className="text-center px-4 py-3 font-medium">{locale === 'lo' ? 'ວັນທີ' : 'Dates'}</th>
+                                        <th className="text-right px-4 py-3 font-medium">{locale === 'lo' ? 'ຄ່າເຊົ່າ' : 'Rental'}</th>
+                                        <th className="text-right px-4 py-3 font-medium">{locale === 'lo' ? 'ຄ່າບໍລິການ' : 'Fee'}</th>
+                                        <th className="text-center px-4 py-3 font-medium">{locale === 'lo' ? 'ສະຖານະ' : 'Status'}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {bookings.map(b => (
+                                        <tr key={b.id} className="border-t border-gray-100 hover:bg-white/50 transition-colors">
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-8 h-8 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                                                        {b.asset.product.images[0] ? (
+                                                            <img src={b.asset.product.images[0]} alt="" className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <Package className="w-4 h-4 m-2 text-gray-300" />
+                                                        )}
+                                                    </div>
+                                                    <span className="font-medium text-royal-navy text-xs truncate max-w-[120px]">
+                                                        {locale === 'lo' ? b.asset.product.titleLo : (b.asset.product.titleEn || b.asset.product.titleLo)}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 font-mono text-xs text-navy-600">{b.asset.assetCode}</td>
+                                            <td className="px-4 py-3 text-xs text-navy-600">
+                                                <p>{b.renter.name}</p>
+                                                <p className="text-gray-400 font-mono">{b.renter.phone}</p>
+                                            </td>
+                                            <td className="px-4 py-3 text-xs text-navy-600">{b.asset.owner.name}</td>
+                                            <td className="px-4 py-3 text-center text-xs text-gray-400">
+                                                {new Date(b.pickupDate).toLocaleDateString('lo-LA')} → {new Date(b.returnDate).toLocaleDateString('lo-LA')}
+                                            </td>
+                                            <td className="px-4 py-3 text-right font-bold text-xs text-royal-navy">{fmt(b.rentalFee)} ₭</td>
+                                            <td className="px-4 py-3 text-right text-xs text-champagne-gold">{fmt(b.serviceFee)} ₭</td>
+                                            <td className="px-4 py-3 text-center">
+                                                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${statusColors[b.status] || 'bg-gray-100'}`}>
+                                                    {b.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Mobile Cards */}
+                    <div className="md:hidden space-y-3">
+                        {bookings.map(b => (
+                            <div key={b.id} className="glass rounded-2xl p-4 border border-white/60">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex gap-3">
+                                        <div className="w-12 h-12 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
+                                            {b.asset.product.images[0] ? (
+                                                <img src={b.asset.product.images[0]} alt="" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <Package className="w-5 h-5 m-3.5 text-gray-300" />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-sm text-royal-navy">
+                                                {locale === 'lo' ? b.asset.product.titleLo : (b.asset.product.titleEn || b.asset.product.titleLo)}
+                                            </p>
+                                            <p className="text-xs text-navy-600">{b.asset.assetCode} · {b.asset.owner.name}</p>
+                                            <p className="text-xs text-gray-400 mt-1">👤 {b.renter.name}</p>
+                                            <p className="text-xs text-gray-400">
+                                                📅 {new Date(b.pickupDate).toLocaleDateString('lo-LA')} → {new Date(b.returnDate).toLocaleDateString('lo-LA')}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p className="font-bold text-sm text-royal-navy">
-                                            {locale === 'lo' ? b.asset.product.titleLo : (b.asset.product.titleEn || b.asset.product.titleLo)}
-                                        </p>
-                                        <p className="text-xs text-navy-600">{b.asset.assetCode} · {locale === 'lo' ? 'ເຈົ້າຂອງ' : 'Owner'}: {b.asset.owner.name}</p>
-                                        <p className="text-xs text-gray-400 mt-1">
-                                            👤 {b.renter.name} · {b.renter.phone}
-                                        </p>
-                                        <p className="text-xs text-gray-400">
-                                            📅 {new Date(b.pickupDate).toLocaleDateString('lo-LA')} → {new Date(b.returnDate).toLocaleDateString('lo-LA')}
-                                        </p>
+                                    <div className="text-right">
+                                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${statusColors[b.status] || 'bg-gray-100'}`}>
+                                            {b.status}
+                                        </span>
+                                        <p className="text-sm font-bold text-royal-navy mt-1">{fmt(b.rentalFee + b.serviceFee + b.deposit)} ₭</p>
                                     </div>
-                                </div>
-                                <div className="text-right">
-                                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${statusColors[b.status] || 'bg-gray-100'}`}>
-                                        {b.status}
-                                    </span>
-                                    <p className="text-sm font-bold text-royal-navy mt-1">{fmt(b.rentalFee + b.serviceFee + b.deposit)} ₭</p>
-                                    <p className="text-[10px] text-gray-400">
-                                        {locale === 'lo' ? 'ຄ່າບໍລິການ' : 'Fee'}: {fmt(b.serviceFee)} ₭
-                                    </p>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                </>
             )}
 
             {/* === REVENUE TAB === */}

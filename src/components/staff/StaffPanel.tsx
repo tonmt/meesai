@@ -116,8 +116,8 @@ export default function StaffPanel({ todayBookings, locale, staffName }: Props) 
                 <button
                     onClick={() => setActiveTab('today')}
                     className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'today'
-                            ? 'bg-royal-navy text-white shadow-md'
-                            : 'bg-white/80 text-navy-600 hover:bg-white border border-gray-200'
+                        ? 'bg-royal-navy text-white shadow-md'
+                        : 'bg-white/80 text-navy-600 hover:bg-white border border-gray-200'
                         }`}
                 >
                     <Clock className="w-4 h-4" />
@@ -126,8 +126,8 @@ export default function StaffPanel({ todayBookings, locale, staffName }: Props) 
                 <button
                     onClick={() => setActiveTab('scan')}
                     className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${activeTab === 'scan'
-                            ? 'bg-royal-navy text-white shadow-md'
-                            : 'bg-white/80 text-navy-600 hover:bg-white border border-gray-200'
+                        ? 'bg-royal-navy text-white shadow-md'
+                        : 'bg-white/80 text-navy-600 hover:bg-white border border-gray-200'
                         }`}
                 >
                     <Search className="w-4 h-4" />
@@ -275,7 +275,7 @@ export default function StaffPanel({ todayBookings, locale, staffName }: Props) 
                                 {locale === 'lo' ? 'ບໍ່ມີການສົ່ງມອບ' : 'No check-outs scheduled'}
                             </p>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {checkOuts.map(b => (
                                     <div key={b.id} className="flex items-center justify-between p-3 bg-white/50 rounded-xl border border-gray-100">
                                         <div className="flex items-center gap-3">
@@ -297,7 +297,7 @@ export default function StaffPanel({ todayBookings, locale, staffName }: Props) 
                                         <button
                                             onClick={() => handleCheckOut(b.id, b.asset.assetCode)}
                                             disabled={isPending}
-                                            className="px-4 py-2 bg-emerald text-white font-bold text-xs rounded-lg hover:bg-emerald/90 disabled:opacity-50 transition-all"
+                                            className="px-4 py-2 bg-emerald text-white font-bold text-xs rounded-lg hover:bg-emerald/90 disabled:opacity-50 transition-all flex-shrink-0"
                                         >
                                             {isPending ? '...' : (locale === 'lo' ? 'ສົ່ງ' : 'Out')}
                                         </button>
@@ -318,7 +318,7 @@ export default function StaffPanel({ todayBookings, locale, staffName }: Props) 
                                 {locale === 'lo' ? 'ບໍ່ມີການຮັບຄືນ' : 'No check-ins scheduled'}
                             </p>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {checkIns.map(b => (
                                     <div key={b.id} className="p-3 bg-white/50 rounded-xl border border-gray-100">
                                         <div className="flex items-center justify-between">
@@ -338,12 +338,11 @@ export default function StaffPanel({ todayBookings, locale, staffName }: Props) 
                                                     <p className="text-xs text-gray-400">👤 {b.renter.name} · {locale === 'lo' ? 'ມັດຈຳ' : 'Dep'}: {fmt(b.deposit)} ₭</p>
                                                 </div>
                                             </div>
-                                            <div className="flex gap-2">
+                                            <div className="flex gap-2 flex-shrink-0">
                                                 <button
                                                     onClick={() => {
                                                         setActiveTab('scan')
                                                         setSearchCode(b.asset.assetCode)
-                                                        // Trigger lookup
                                                         setTimeout(() => handleSearch(), 100)
                                                     }}
                                                     className="px-3 py-2 bg-blue-500 text-white font-bold text-xs rounded-lg hover:bg-blue-500/90 transition-all"

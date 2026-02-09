@@ -22,7 +22,7 @@ export default async function StaffPage({ params }: Props) {
 
     return (
         <div className="min-h-screen hero-bg-light gold-dots-pattern">
-            <div className="max-w-4xl mx-auto px-4 py-6">
+            <div className="max-w-6xl mx-auto px-4 py-6">
                 <h1 className="text-xl font-bold text-royal-navy mb-4 flex items-center gap-2">
                     📋 {locale === 'lo' ? 'ປະຈຳການ' : 'Staff Panel'}
                 </h1>
