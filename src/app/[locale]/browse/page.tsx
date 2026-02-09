@@ -36,26 +36,15 @@ export default async function BrowsePage({ params, searchParams }: Props) {
 
     return (
         <div className="min-h-screen hero-bg-light gold-dots-pattern">
-            {/* Header */}
-            <div className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-30">
-                <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <a href={`/${locale}`} className="text-navy-600 hover:text-champagne-gold transition-colors flex items-center gap-1">
-                            <ChevronLeft className="w-4 h-4" />
-                            {locale === 'lo' ? 'ໜ້າຫຼັກ' : 'Home'}
-                        </a>
-                        <span className="text-gray-300">|</span>
-                        <h1 className="text-lg font-bold text-royal-navy">
-                            {locale === 'lo' ? 'ເບິ່ງຊຸດທັງໝົດ' : 'Browse All'}
-                        </h1>
-                    </div>
+            <div className="max-w-6xl mx-auto px-4 py-6">
+                <div className="flex items-center justify-between mb-4">
+                    <h1 className="text-xl font-bold text-royal-navy">
+                        {locale === 'lo' ? 'ເບິ່ງຊຸດທັງໝົດ' : 'Browse All'}
+                    </h1>
                     <span className="text-sm text-navy-600">
                         {result.total} {locale === 'lo' ? 'ລາຍການ' : 'items'}
                     </span>
                 </div>
-            </div>
-
-            <div className="max-w-6xl mx-auto px-4 py-6">
                 {/* Filters */}
                 <BrowseFilters
                     categories={categories}
@@ -154,8 +143,8 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                                 key={i + 1}
                                 href={`/${locale}/browse?page=${i + 1}${sp.category ? `&category=${sp.category}` : ''}${sp.size ? `&size=${sp.size}` : ''}${sp.search ? `&search=${sp.search}` : ''}`}
                                 className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-medium transition-all ${page === i + 1
-                                        ? 'bg-champagne-gold text-royal-navy shadow-md'
-                                        : 'bg-white border border-gray-200 text-navy-600 hover:border-champagne-gold'
+                                    ? 'bg-champagne-gold text-royal-navy shadow-md'
+                                    : 'bg-white border border-gray-200 text-navy-600 hover:border-champagne-gold'
                                     }`}
                             >
                                 {i + 1}

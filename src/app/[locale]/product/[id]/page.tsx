@@ -29,23 +29,10 @@ export default async function ProductDetailPage({ params }: Props) {
 
     return (
         <div className="min-h-screen hero-bg-light gold-dots-pattern">
-            {/* Header */}
-            <div className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-30">
-                <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <a href={`/${locale}/browse`} className="text-navy-600 hover:text-champagne-gold transition-colors flex items-center gap-1">
-                            <ChevronLeft className="w-4 h-4" />
-                            {locale === 'lo' ? 'ກັບຄືນ' : 'Back'}
-                        </a>
-                        <span className="text-gray-300">|</span>
-                        <span className="text-xs text-gray-400">
-                            {locale === 'lo' ? product.category.nameLo : product.category.nameEn}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="max-w-6xl mx-auto px-4 py-6">
+                <span className="text-xs text-gray-400 mb-4 block">
+                    {locale === 'lo' ? product.category.nameLo : product.category.nameEn}
+                </span>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     {/* Left: Gallery */}
                     <div className="space-y-4">
