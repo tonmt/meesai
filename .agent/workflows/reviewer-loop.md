@@ -29,6 +29,11 @@ description: Reviewer Agent workflow v3 - ดูโค้ด + ทดสอบ +
 cat /mnt/DiskHik/CODE/meesai/.agent/status.json && echo "---" && ls -la /mnt/DiskHik/CODE/meesai/.agent/handoff/
 ```
 
+2. **ตรวจ Director Input** (ถ้ามี → อ่าน → ลบ → factor into review)
+```
+cat /mnt/DiskHik/CODE/meesai/.agent/handoff/DIRECTOR_INPUT.md 2>/dev/null && rm /mnt/DiskHik/CODE/meesai/.agent/handoff/DIRECTOR_INPUT.md 2>/dev/null || echo "NO_DIRECTOR_INPUT"
+```
+
 ## Phase 2 — Decision (ตัดสินใจภายใน 1 tool call)
 
 2. ถ้า `turn` = `"reviewer"`:

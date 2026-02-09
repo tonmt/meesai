@@ -25,6 +25,11 @@ cd /mnt/DiskHik/CODE/meesai && kill -9 $(ps aux | grep 'git' | grep -v grep | aw
 cat /mnt/DiskHik/CODE/meesai/.agent/status.json && echo "---" && ls -la /mnt/DiskHik/CODE/meesai/.agent/handoff/
 ```
 
+3. **ตรวจ Director Input** (ถ้ามี → อ่าน → ลบ → รวมเข้า scope)
+```
+cat /mnt/DiskHik/CODE/meesai/.agent/handoff/DIRECTOR_INPUT.md 2>/dev/null && rm /mnt/DiskHik/CODE/meesai/.agent/handoff/DIRECTOR_INPUT.md 2>/dev/null || echo "NO_DIRECTOR_INPUT"
+```
+
 ## Phase 2 — Decision (ตัดสินใจภายใน 1 tool call)
 
 3. ถ้า `turn` = `"coder"`:
