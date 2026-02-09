@@ -150,7 +150,7 @@ async function main() {
                 id: `seed-${p.assetCode}`,
                 titleLo: p.titleLo,
                 titleEn: p.titleEn,
-                images: [],
+                images: [`https://picsum.photos/seed/${p.assetCode}/400/533`],
                 rentalPrice: p.rentalPrice,
                 buyPrice: p.buyPrice,
                 size: p.size,

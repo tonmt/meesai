@@ -20,7 +20,8 @@ services:
       MINIO_BUCKET: meesai-images
       NODE_ENV: production
       NEXTAUTH_URL: https://meesai.vgroup.work
-      NEXTAUTH_SECRET: meesai-fashion-secret-2026-very-long-random-string
+      AUTH_SECRET: ${AUTH_SECRET}
+      AUTH_TRUST_HOST: "true"
     depends_on:
       postgres:
         condition: service_healthy

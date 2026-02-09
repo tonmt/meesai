@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations, useLocale } from 'next-intl';
-import { Heart, ArrowRight, Shirt, SlidersHorizontal, X } from 'lucide-react';
+import { Heart, ArrowRight, Shirt, SlidersHorizontal, X, Lock } from 'lucide-react';
 import { useState } from 'react';
 import type { FeedProduct } from '@/actions/products';
 
@@ -17,8 +17,6 @@ type Props = {
     products: FeedProduct[];
     categories: Category[];
 };
-
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', 'Free'];
 
 function formatPrice(price: number): string {
     return new Intl.NumberFormat('lo-LA').format(price);
@@ -100,33 +98,15 @@ export default function DynamicFeed({ products, categories }: Props) {
                                 </div>
                             </div>
 
-                            {/* Size */}
-                            <div>
-                                <h5 className="text-sm font-semibold text-navy-600 mb-3">{locale === 'lo' ? 'ຂະໜາດ' : 'Size'}</h5>
-                                <div className="flex flex-wrap gap-2">
-                                    {SIZES.map(s => (
-                                        <button key={s} className="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-navy-600 hover:border-champagne-gold hover:text-champagne-gold transition-all">
-                                            {s}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Price Range */}
-                            <div>
-                                <h5 className="text-sm font-semibold text-navy-600 mb-3">{locale === 'lo' ? 'ລາຄາເຊົ່າ' : 'Rental Price'}</h5>
-                                <div className="space-y-2">
-                                    {[
-                                        { label: '< 1,000,000 ₭', value: '0-1000000' },
-                                        { label: '1M - 2M ₭', value: '1000000-2000000' },
-                                        { label: '2M - 3M ₭', value: '2000000-3000000' },
-                                        { label: '> 3,000,000 ₭', value: '3000000+' },
-                                    ].map(range => (
-                                        <button key={range.value} className="w-full text-left px-3 py-2 rounded-lg text-sm text-navy-600 hover:bg-gray-50 transition-all">
-                                            {range.label}
-                                        </button>
-                                    ))}
-                                </div>
+                            {/* Price Range — Coming Soon */}
+                            <div className="opacity-50">
+                                <h5 className="text-sm font-semibold text-navy-600 mb-2 flex items-center gap-1.5">
+                                    <Lock className="w-3 h-3" />
+                                    {locale === 'lo' ? 'ຕົວກັ່ນຕອງເພີ່ມເຕີມ' : 'More Filters'}
+                                </h5>
+                                <p className="text-xs text-navy-600/60">
+                                    {locale === 'lo' ? 'ຂະໜາດ, ລາຄາ — ເປີດໃຊ້ໃນ Sprint 4' : 'Size, Price — Coming in Sprint 4'}
+                                </p>
                             </div>
 
                             {/* Product Count */}
@@ -150,12 +130,20 @@ export default function DynamicFeed({ products, categories }: Props) {
                                 <div key={item.id} className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                                     {/* Image */}
                                     <div className="relative aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 gap-2">
-                                            <Shirt className="w-12 h-12" />
-                                            {item.brand && (
-                                                <span className="text-xs text-gray-400 font-medium">{item.brand}</span>
-                                            )}
-                                        </div>
+                                        {item.images.length > 0 ? (
+                                            <img
+                                                src={item.images[0]}
+                                                alt={locale === 'lo' ? item.titleLo : (item.titleEn || item.titleLo)}
+                                                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            />
+                                        ) : (
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 gap-2">
+                                                <Shirt className="w-12 h-12" />
+                                                {item.brand && (
+                                                    <span className="text-xs text-gray-400 font-medium">{item.brand}</span>
+                                                )}
+                                            </div>
+                                        )}
                                         {/* Available Badge */}
                                         {item.availableCount > 0 && (
                                             <div className="absolute top-3 left-3">
@@ -198,7 +186,12 @@ export default function DynamicFeed({ products, categories }: Props) {
                                                 {formatPrice(item.rentalPrice)} {t('feed.currency')}
                                             </span>
                                         </div>
-                                        <button className="w-full mt-3 py-2 bg-royal-navy text-white text-sm font-medium rounded-xl hover:bg-champagne-gold hover:text-royal-navy transition-all duration-300">
+                                        <button
+                                            disabled
+                                            title={locale === 'lo' ? 'ເປີດໃຫ້ບໍລິການໃນ Sprint 4' : 'Coming in Sprint 4'}
+                                            className="w-full mt-3 py-2 bg-royal-navy/50 text-white/70 text-sm font-medium rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5"
+                                        >
+                                            <Lock className="w-3 h-3" />
                                             {t('feed.quick_book')}
                                         </button>
                                     </div>
@@ -238,16 +231,12 @@ export default function DynamicFeed({ products, categories }: Props) {
                                         ))}
                                     </div>
                                 </div>
-                                {/* Size */}
-                                <div className="mb-6">
-                                    <h5 className="text-sm font-semibold text-navy-600 mb-3">{locale === 'lo' ? 'ຂະໜາດ' : 'Size'}</h5>
-                                    <div className="flex flex-wrap gap-2">
-                                        {SIZES.map(s => (
-                                            <button key={s} className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-navy-600">
-                                                {s}
-                                            </button>
-                                        ))}
-                                    </div>
+                                {/* Coming Soon Note */}
+                                <div className="mb-6 opacity-50">
+                                    <p className="text-xs text-navy-600/60 flex items-center gap-1.5">
+                                        <Lock className="w-3 h-3" />
+                                        {locale === 'lo' ? 'ຕົວກັ່ນຕອງ ຂະໜາດ/ລາຄາ — Sprint 4' : 'Size/Price filters — Sprint 4'}
+                                    </p>
                                 </div>
                                 {/* Apply */}
                                 <button
