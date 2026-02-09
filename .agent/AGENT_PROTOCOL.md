@@ -1,6 +1,7 @@
-# 🔄 MeeSai Dual-Agent Protocol
+# 🔄 MeeSai Dual-Agent Protocol v2
 
 > Coder Agent ↔ Reviewer Agent Communication Standard
+> Updated: 2026-02-09 · Based on 12+ sprint production experience
 
 ## Architecture
 
@@ -18,8 +19,8 @@
 
 ```
 meesai/.agent/
-├── AGENT_PROTOCOL.md        # ← เอกสารนี้
-├── status.json              # สถานะปัจจุบัน (ใครกำลังทำอะไร)
+├── AGENT_PROTOCOL.md        # ← เอกสารนี้ (v2)
+├── status.json              # สถานะปัจจุบัน + sprint history
 └── handoff/
     ├── DONE.md              # Coder → Reviewer (ส่งมอบงาน)
     └── REVIEW.md            # Reviewer → Coder (ส่ง feedback)
@@ -29,56 +30,74 @@ meesai/.agent/
 
 ## 1. `status.json` — Agent State
 
-ไฟล์นี้บอกว่าตอนนี้ใครควรทำงาน:
-
 ```json
 {
   "turn": "coder",
-  "sprint": "3.3",
-  "feature": "Booking Logic",
-  "lastUpdate": "2026-02-09T20:00:00+07:00",
-  "cycle": 1
+  "sprint": "7.0",
+  "feature": "Final Polish + Error Handling",
+  "lastUpdate": "2026-02-09T23:12:00+07:00",
+  "cycle": 0,
+  "lastVerdict": "APPROVED",
+  "directorNote": "Sprint 6.2 APPROVED! ต่อ 7.0...",
+  "history": [
+    { "sprint": "6.2", "verdict": "APPROVED", "date": "2026-02-09" },
+    { "sprint": "6.1", "verdict": "APPROVED", "date": "2026-02-09" }
+  ]
 }
 ```
 
-| Field | Values |
-|:---|:---|
-| `turn` | `"coder"` or `"reviewer"` |
-| `sprint` | Sprint ปัจจุบัน |
-| `feature` | ฟีเจอร์ที่กำลังทำ |
-| `cycle` | รอบ review (1 = ส่ง review ครั้งแรก, 2 = แก้ไขแล้วส่งอีกครั้ง) |
+| Field | Type | Description |
+|:---|:---|:---|
+| `turn` | `"coder"` \| `"reviewer"` | ใครควรทำงานตอนนี้ |
+| `sprint` | string | Sprint ปัจจุบัน |
+| `feature` | string | ชื่อ feature ที่ทำ |
+| `lastUpdate` | ISO datetime | เวลาอัพเดทล่าสุด |
+| `cycle` | number | รอบ review (0 = ยังไม่ส่ง, 1+ = ส่งแล้ว) |
+| `lastVerdict` | `"APPROVED"` \| `"REVISE"` \| `"REJECT"` \| `"PENDING"` | ผลตัดสินล่าสุด |
+| `directorNote` | string | คำสั่งจาก Director (user) สำหรับ sprint ถัดไป |
+| `history` | array | ประวัติ sprint ที่ผ่านมา (append-only) |
 
 ---
 
 ## 2. `DONE.md` — Coder → Reviewer
 
-เมื่อ Coder ทำเสร็จ sprint/feature จะสร้างไฟล์นี้:
+**Template:**
 
 ```markdown
-# ✅ DONE — Sprint 3.3: Booking Logic
+# ✅ DONE — Sprint X.Y: [Feature Name]
+
+> Coder Agent · [datetime] · Cycle [N]
+
+---
 
 ## สรุปสิ่งที่ทำ
-- สร้าง booking flow (เลือกชุด → เลือกวัน → ชำระเงิน)
-- Server Actions: createBooking(), cancelBooking()
-- Concurrency Control: optimistic lock ด้วย version field
+[สรุปชัดเจน แบ่งเป็น section ถ้ามีหลาย feature]
 
 ## ไฟล์ที่เปลี่ยน
+
 | File | Change |
 |:---|:---|
-| `src/actions/booking.ts` | [NEW] Booking Server Actions |
-| `src/app/[locale]/booking/page.tsx` | [NEW] Booking page |
-| `prisma/schema.prisma` | [MODIFY] Added version field |
+| `path/to/file` | [NEW] / [MODIFY] / [DELETE] description |
+
+## Verification Checklist (Coder ทำแล้ว)
+- [x] `npm run build` — ผ่าน (X routes, 0 errors)
+- [x] `docker compose up -d --build app` — deployed
+- [x] `git add -A && git commit` — committed
+- [x] ทดสอบ basic flow ผ่าน
 
 ## ขอให้ Review
-- [ ] 🎩 Business: booking flow สร้างรายได้จริงไหม?
-- [ ] 🧢 UX: ลูกค้าจองง่ายไหม? กี่คลิก?
-- [ ] 👒 Owner: เจ้าของร้านเห็นยอดจองเรียลไทม์ไหม?
+- [ ] 🎩 Business: [คำถาม]
+- [ ] 🧢 UX: [คำถาม]
+- [ ] 👒 Owner: [คำถาม]
 
 ## Test Credentials
+
 | Role | Phone | Password |
 |:---|:---|:---|
 | Admin | 02099990001 | meesai123 |
+| Owner | 02088881001 | meesai123 |
 | Renter | 02077772001 | meesai123 |
+| Staff | 02066660001 | meesai123 |
 
 ## Live URL
 https://meesai.vgroup.work
@@ -88,73 +107,134 @@ https://meesai.vgroup.work
 
 ## 3. `REVIEW.md` — Reviewer → Coder
 
-Reviewer จะสร้างไฟล์นี้หลัง review เสร็จ:
+**Template:**
 
 ```markdown
-# 📋 REVIEW — Sprint 3.3: Booking Logic
+# 📋 REVIEW — Sprint X.Y: [Feature Name]
 
-## Verdict: 🟡 REVISE (or 🟢 APPROVED / 🔴 REJECT)
+> MeeSai Director (Reviewer Agent) · [datetime] · Cycle [N]
 
-## 🎩 Executive Review
-- ✅ Booking flow สร้างรายได้ได้จริง
-- ⚠️ ยังไม่มี deposit collection → ถ้าลูกค้าจองแล้วไม่มา จะเสียโอกาส
-- **Action Required:** เพิ่ม deposit payment step ก่อน confirm
+## Verdict: 🟢 APPROVED / 🟡 REVISE / 🔴 REJECT
 
-## 🧢 Renter Review
-- ✅ UI สวย จองง่าย 3 คลิก
-- ⚠️ ไม่มี calendar view → ลูกค้าไม่เห็นว่าวันไหนว่าง
-- **Action Required:** เพิ่ม availability calendar
+---
 
-## 👒 Owner Review
-- ✅ Dashboard มียอดจอง
-- ⚠️ ไม่มี notification เมื่อมีคนจองชุด
-- **Action Required:** เพิ่ม push notification / LINE notify
+## 🎩 Executive Review — ✅/⚠️/❌
+[ประเมิน business value, revenue impact, scalability]
 
-## Priority Actions (Coder ต้องทำ)
-1. 🔴 **MUST** — Deposit payment step
-2. 🟡 **SHOULD** — Availability calendar
-3. 🟢 **NICE** — LINE notification (ย้ายไป Sprint 3.4)
+## 🧢 Renter/UX Review — ✅/⚠️/❌
+[ประเมิน UX, คลิกง่าย, สวยงาม, responsive]
 
-## Files to Review
-- `src/actions/booking.ts` line 45: race condition ถ้า 2 คนจองพร้อมกัน
-- `src/app/[locale]/booking/page.tsx` line 120: ไม่มี loading state
+## 👒 Owner Review — ✅/⚠️/❌
+[ประเมิน จัดการง่าย, รายได้ชัด, ระบบถูกต้อง]
+
+## Priority Actions
+1. 🔴 **MUST** — [ต้องแก้ก่อน deploy]
+2. 🟡 **SHOULD** — [ควรแก้ใน sprint นี้]
+3. 🟢 **NICE** — [ย้ายไป backlog ได้]
+
+## Files to Review (ถ้ามี)
+- `path/to/file` line X: [ปัญหา]
 ```
 
 ---
 
 ## 4. Workflow Loop
 
-```mermaid
-graph TD
-    A[Coder: Implement Feature] --> B[Coder: Write DONE.md]
-    B --> C[Set status.json turn=reviewer]
-    C --> D[Reviewer: Read DONE.md]
-    D --> E[Reviewer: Test & Review]
-    E --> F[Reviewer: Write REVIEW.md]
-    F --> G[Set status.json turn=coder]
-    G --> H{Verdict?}
-    H -->|🟢 APPROVED| I[Move to next Sprint]
-    H -->|🟡 REVISE| A
-    H -->|🔴 REJECT| J[Coder: Redesign]
-    J --> A
+```
+  ┌──────────────────────────────────────────────────────┐
+  │                   CODER TURN                          │
+  │  1. Kill hung git processes                          │
+  │  2. Read status.json → check turn                    │
+  │  3. If REVIEW.md exists → fix feedback               │
+  │     If no REVIEW.md → start new sprint               │
+  │  4. Implement code                                   │
+  │  5. npm run build (MUST pass)                        │
+  │  6. docker compose up -d --build app                 │
+  │  7. git add -A && git commit                         │
+  │  8. Write DONE.md                                    │
+  │  9. Delete REVIEW.md (if exists)                     │
+  │ 10. Update status.json (turn→reviewer, cycle+1)      │
+  └─────────────────────┬────────────────────────────────┘
+                        ▼
+  ┌──────────────────────────────────────────────────────┐
+  │                  REVIEWER TURN                        │
+  │  1. Read status.json → check turn                    │
+  │  2. Read DONE.md                                     │
+  │  3. Review code files listed                         │
+  │  4. Test on live URL (if applicable)                 │
+  │  5. Write REVIEW.md with verdict                     │
+  │  6. Delete DONE.md                                   │
+  │  7. Update status.json (turn→coder, lastVerdict)     │
+  │  8. Append to history[]                              │
+  └─────────────────────┬────────────────────────────────┘
+                        ▼
+              ┌─────────────────┐
+              │    Verdict?      │
+              └────┬────┬───┬───┘
+         APPROVED  │    │   │ REJECT
+                   │ REVISE │
+                   ▼    ▼   ▼
+              Next   Fix   Redesign
+              Sprint  ↑     ↑
+                      └─────┘
+                   Back to CODER
 ```
 
-## 5. Rules
+## 5. Fast-Track Mode (Director Override)
 
-### Coder Agent Rules
-1. เมื่อเห็น `REVIEW.md` → อ่าน feedback → แก้ไข → เขียน `DONE.md` ใหม่
-2. แก้ไขตาม Priority: 🔴 MUST ก่อน → 🟡 SHOULD → 🟢 NICE (ย้ายไป backlog)
-3. ลบ `REVIEW.md` หลังอ่านเสร็จ เพื่อป้องกัน stale feedback
-4. อัพเดท `status.json` ทุกครั้งที่ส่งมอบงาน
+เมื่อ User (Director) ต้องการข้าม Reviewer:
 
-### Reviewer Agent Rules
-1. เมื่อเห็น `DONE.md` → อ่าน → ทดสอบ → เขียน `REVIEW.md`
-2. Review จาก 3 มุมมอง: 🎩 Executive, 🧢 Renter, 👒 Owner
-3. ให้ Verdict: 🟢 APPROVED / 🟡 REVISE / 🔴 REJECT
-4. ลบ `DONE.md` หลังอ่านเสร็จ
-5. อัพเดท `status.json` ทุกครั้งที่ส่ง review
+1. User **ลบ DONE.md** ด้วยตนเอง
+2. User **แก้ status.json** ตั้ง `turn: "coder"` + `lastVerdict: "APPROVED"` + sprint ใหม่ + `directorNote`
+3. Coder เห็น `turn: "coder"` + ไม่มี `REVIEW.md` → **เริ่ม sprint ใหม่ตาม directorNote**
 
-### Shared Rules
-- อ่าน `status.json` ก่อนเริ่มทำงานทุกครั้ง
-- ถ้า `turn` ไม่ใช่ของตัวเอง → **รอ** (แจ้ง user)
-- ถ้าทั้ง 2 ไฟล์มีอยู่พร้อมกัน → **conflict** → ให้ user ตัดสิน
+> ⚠️ Fast-track ใช้เมื่อ Director มั่นใจ — ไม่ต้องรอ Reviewer
+
+---
+
+## 6. Rules
+
+### 🔧 Coder Agent Rules
+1. **Git Hygiene First** — ก่อนเริ่มงาน ต้อง kill hung git processes + rm index.lock
+2. **Check turn** — อ่าน `status.json` ก่อนทุกครั้ง ถ้า turn ≠ coder → รอ
+3. **REVIEW.md First** — ถ้ามี REVIEW.md → อ่าน + แก้ feedback ก่อนเริ่มงานใหม่
+4. **Priority Order** — 🔴 MUST → 🟡 SHOULD → 🟢 NICE (ย้าย backlog)
+5. **Build Gate** — `npm run build` ต้อง **ผ่านก่อนส่ง** DONE.md (0 errors)
+6. **Deploy Gate** — `docker compose up -d --build app` ต้องสำเร็จ
+7. **Git Gate** — `git add -A && git commit` ต้องสำเร็จ (kill zombie first)
+8. **DONE.md Quality** — ต้องมี Verification Checklist ที่ checked ทุกข้อ
+9. **Atomic Handoff** — เขียน DONE.md → ลบ REVIEW.md → อัพเดท status.json (3 steps ต่อเนื่อง)
+10. **No Stale State** — ถ้า cycle > 3 → แจ้ง user ว่า sprint นี้ติด loop
+
+### 🔍 Reviewer Agent Rules
+1. **Check turn** — อ่าน `status.json` ก่อนทุกครั้ง ถ้า turn ≠ reviewer → รอ
+2. **Read DONE.md** — อ่าน → ดูโค้ด → ทดสอบ live URL (ถ้ามี)
+3. **3-Hat Review** — ต้อง review จาก 🎩 Executive, 🧢 Renter, 👒 Owner ทุกครั้ง
+4. **Verdict Required** — ต้องให้ 🟢 / 🟡 / 🔴 ทุก review
+5. **Priority Actions** — ถ้า 🟡 REVISE → ต้องมี Priority Actions ที่ชัดเจน
+6. **Atomic Handoff** — เขียน REVIEW.md → ลบ DONE.md → อัพเดท status.json + history
+7. **Code Reading** — ต้องอ่านไฟล์สำคัญจริง (ไม่ใช่แค่ trust DONE.md)
+8. **Fast fail** — ถ้า build ไม่ผ่านหรือ deploy ไม่ได้ → 🔴 REJECT ทันที
+
+### 🤝 Shared Rules
+- อ่าน `status.json` **ก่อนเริ่มทำงานทุกครั้ง** — ไม่มีข้อยกเว้น
+- ถ้า `turn` ไม่ใช่ของตัวเอง → **รอ + แจ้ง user**
+- ถ้า DONE.md + REVIEW.md **มีพร้อมกัน** → conflict → ให้ user ตัดสิน
+- ถ้า turn ค้างเกิน 5 นาทีแบบไม่มีงาน → แจ้ง user ให้ตรวจสอบ
+
+---
+
+## 7. Sprint History Format
+
+เมื่อ Reviewer ให้ verdict จะ append เข้า `history[]` ใน status.json:
+
+```json
+{
+  "sprint": "7.0",
+  "verdict": "APPROVED",
+  "date": "2026-02-09",
+  "summary": "Error boundaries + Loading skeletons + SEO"
+}
+```
+
+ช่วยให้เห็นภาพรวมว่า project ผ่านมาแล้วกี่ sprint อะไรบ้าง
