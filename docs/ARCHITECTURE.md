@@ -81,13 +81,15 @@ bufferEnd     → วันที่ชุดพร้อมให้เช่�
 
 ## 3. Design System
 
-### Color Palette
+### Color Palette (Light Theme)
 
 | Token | Hex | Usage |
 |:---|:---|:---|
-| `--color-royal-navy` | `#0F172A` | Primary BG, trust, authority |
-| `--color-champagne-gold` | `#D4AF37` | CTA, luxury accent |
-| `--color-off-white` | `#F9FAFB` | Light background |
+| Body BG | `#FFFFFF` | Main background (White) |
+| `--color-royal-navy` | `#0F172A` | Primary text, headings |
+| `--color-champagne-gold` | `#D4AF37` | CTA, luxury accent, active states |
+| `--color-off-white` | `#F9FAFB` | Section backgrounds, card bg |
+| `--color-cream` | `#F5F0E8` | Hero section, warm background |
 | `--color-emerald` | `#10B981` | Available, confirm, success |
 | `--color-danger` | `#EF4444` | Rental price highlight, errors |
 
@@ -106,14 +108,19 @@ bufferEnd     → วันที่ชุดพร้อมให้เช่�
 | `.animate-fade-in-up` | Fade + slide up (0.8s) |
 | `.animate-float` | Gentle floating (3s loop) |
 | `.animate-pulse-gold` | Gold glow pulse (2s loop) |
+| `.animate-slide-in-right` | Slide in from right (0.3s) |
+| `.animate-slide-in-up` | Slide in from bottom (0.3s) |
 | `.gold-shimmer` | Gold shimmer sweep (3s loop) |
 
 ### Component Styles
 
 | Class | Effect |
 |:---|:---|
-| `.glass` | Navy glassmorphism (blur 20px) |
+| `.glass` | White glassmorphism (blur 20px, subtle shadow) |
 | `.glass-light` | White glassmorphism (blur 12px) |
+| `.glass-dark` | Navy glassmorphism (for dark sections) |
+| `.hero-bg-light` | Cream gradient hero background |
+| `.gold-dots-pattern` | Decorative radial gold dots |
 | `.text-gold-gradient` | Gold gradient text |
 | `.no-scrollbar` | Hide scrollbar (cross-browser) |
 
@@ -144,17 +151,19 @@ i18n/navigation.ts    → Link, redirect, usePathname, useRouter
 
 ## 5. Landing Page Sections
 
-| # | Section | Component | Description |
-|:---:|:---|:---|:---|
-| 1 | Sticky Header | `StickyHeader()` | Glass navbar, search, locale, cart |
-| 2 | Hero | `HeroSection()` | Slogan, dual CTA, stats counter |
-| 3 | Booking Engine | `BookingEngine()` | Date, occasion, size, check availability |
-| 4 | Occasion Nav | `OccasionNav()` | 6 icon circles (IG style) |
-| 5 | Dynamic Feed | `DynamicFeed()` | Product cards grid, quick book |
-| 6 | Trust | `TrustSection()` | 3 service guarantee badges |
-| 7 | Owner Zone | `OwnerZone()` | 0% GP partner recruitment |
-| 8 | Footer | `Footer()` | Payment logos, legal, contact |
-| — | Bottom Nav | `BottomNav()` | Mobile-only tab bar (5 tabs) |
+All sections are modular components in `src/components/landing/`:
+
+| # | Section | Component File | Mobile | Desktop |
+|:---:|:---|:---|:---|:---|
+| 1 | Header | `StickyHeader.tsx` | Hamburger + drawer | Nav links + login |
+| 2 | Hero | `HeroSection.tsx` | Center text | Split layout (text + card) |
+| 3 | Booking | `BookingEngine.tsx` | Stacked inputs | Grid 4 cols |
+| 4 | Occasion | `OccasionNav.tsx` | Horizontal scroll | Grid 6 cols |
+| 5 | Feed | `DynamicFeed.tsx` | 2 cols + bottom sheet | 3 cols + sidebar filter |
+| 6 | Trust | `TrustSection.tsx` | Stacked cards | Grid 3 cols + hover |
+| 7 | Owner | `OwnerZone.tsx` | Center + cards below | Split layout + benefit cards |
+| 8 | Footer | `Footer.tsx` | 1 col stacked | 4 col grid + social |
+| — | BottomNav | `BottomNav.tsx` | 5 tabs | Hidden (use top nav) |
 
 ---
 

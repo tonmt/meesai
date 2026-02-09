@@ -4,8 +4,9 @@
 > O2O Fashion Rental Platform · Vientiane, Laos
 
 [![Live](https://img.shields.io/badge/Live-meesai.vgroup.work-D4AF37?style=flat-square)](https://meesai.vgroup.work)
-[![Version](https://img.shields.io/badge/Version-0.1.0-0F172A?style=flat-square)](#)
-[![Phase](https://img.shields.io/badge/Phase-1%20Foundation-10B981?style=flat-square)](#)
+[![Version](https://img.shields.io/badge/Version-0.2.0-0F172A?style=flat-square)](#)
+[![Phase](https://img.shields.io/badge/Phase-2%20Responsive-10B981?style=flat-square)](#)
+[![Theme](https://img.shields.io/badge/Theme-Light-F9FAFB?style=flat-square&labelColor=D4AF37)](#)
 
 ---
 
@@ -85,18 +86,29 @@ docker ps --filter "name=meesai"
 meesai/
 ├── src/
 │   ├── app/
-│   │   ├── globals.css          # Design System (tokens, animations)
+│   │   ├── globals.css          # Design System (Light Theme)
 │   │   ├── layout.tsx           # Root Layout
 │   │   └── [locale]/
 │   │       ├── layout.tsx       # Locale Layout (NextIntlClientProvider)
-│   │       └── page.tsx         # Landing Page (8 Sections)
+│   │       └── page.tsx         # Landing Page (imports 8 components)
+│   ├── components/
+│   │   └── landing/
+│   │       ├── StickyHeader.tsx  # Desktop nav + mobile hamburger
+│   │       ├── HeroSection.tsx   # Split layout PC / center mobile
+│   │       ├── BookingEngine.tsx  # Responsive grid 1→4
+│   │       ├── OccasionNav.tsx   # Scroll → grid 6
+│   │       ├── DynamicFeed.tsx   # Sidebar filter + bottom sheet
+│   │       ├── TrustSection.tsx  # Trust badges
+│   │       ├── OwnerZone.tsx     # Partner zone + benefit cards
+│   │       ├── Footer.tsx        # 4-column + social icons
+│   │       └── BottomNav.tsx     # Mobile tab bar
 │   ├── i18n/
 │   │   ├── navigation.ts       # Link, redirect, usePathname, useRouter
 │   │   ├── request.ts          # Locale detection + message loading
 │   │   └── routing.ts          # Supported locales config
 │   └── middleware.ts            # Locale routing middleware
 ├── messages/
-│   ├── lo.json                  # ภาษาลาว (Primary)
+│   ├── lo.json                  # ພາສາລາວ (Primary)
 │   └── en.json                  # English (Secondary)
 ├── prisma/
 │   └── schema.prisma            # Database schema (6 models)

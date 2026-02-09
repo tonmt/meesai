@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [0.2.0] — 2026-02-09
+
+### 🎨 Phase 2: Light Theme + Responsive Perfection
+
+#### Changed
+- **Theme:** Dark → Light across entire system
+  - Body background: Navy `#0F172A` → White `#FFFFFF`
+  - Header: Dark glass → White glass with subtle shadow
+  - Hero: Navy gradient → Cream gradient + gold dots pattern
+  - Footer/BottomNav: Navy → White
+  - All text: White → Royal Navy / Navy-600
+  - Accent colors preserved (Champagne Gold, Emerald, Danger)
+
+- **Component Structure:** Monolithic → Modular
+  - `page.tsx` refactored from 506 lines to 26 lines
+  - 8 standalone components in `src/components/landing/`
+
+#### Added
+- **Desktop Navigation:** Top nav links (ໜ້າຫຼັກ, ເຊົ່າຊຸດ, ວິທີການ, ຕິດຕໍ່)
+- **Mobile Hamburger:** Slide-in drawer with nav + login + locale
+- **Hero Split Layout:** Desktop = text left + card showcase right
+- **Sidebar Filter (Desktop):** Category, Size, Price range for product feed
+- **Bottom Sheet Filter (Mobile):** Swipe-up filter with apply button
+- **Owner Benefit Cards:** 3 cards (Passive Income, Insurance, Dashboard)
+- **Footer 4-Column Layout:** Brand + Quick Links + Legal + Payment
+- **Social Icons:** Facebook, Instagram, TikTok
+- **New CSS:** `hero-bg-light`, `gold-dots-pattern`, slide-in animations
+- **Translations:** Nav links + footer quick links (LO/EN)
+
+---
+
 ## [0.1.0] — 2026-02-09
 
 ### 🎉 Initial Release — Phase 1: Foundation
