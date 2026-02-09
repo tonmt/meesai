@@ -2,6 +2,7 @@ import { getBookingForPayment } from '@/actions/payment'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import PaymentConfirm from '@/components/booking/PaymentConfirm'
+import { getTranslations } from 'next-intl/server'
 
 type Props = {
     params: Promise<{ locale: string; id: string }>
@@ -9,6 +10,7 @@ type Props = {
 
 export default async function PaymentPage({ params }: Props) {
     const { locale, id } = await params
+    const t = await getTranslations('payment')
 
     const session = await auth()
     if (!session?.user) {
@@ -24,7 +26,7 @@ export default async function PaymentPage({ params }: Props) {
         <div className="min-h-screen hero-bg-light gold-dots-pattern">
             <div className="max-w-3xl mx-auto px-4 py-6">
                 <h1 className="text-xl font-bold text-royal-navy mb-6">
-                    {locale === 'lo' ? 'ຊຳລະເງິນ' : 'Payment'}
+                    {t('title')}
                 </h1>
                 <PaymentConfirm booking={booking} locale={locale} />
             </div>

@@ -2,6 +2,7 @@ import { browseProducts, getCategories, getAvailableSizes } from '@/actions/brow
 import Link from 'next/link'
 import { Search, Filter, Package, Star, ChevronLeft, ChevronRight } from 'lucide-react'
 import BrowseFilters from '@/components/product/BrowseFilters'
+import { getTranslations } from 'next-intl/server'
 
 type Props = {
     params: Promise<{ locale: string }>
@@ -18,6 +19,7 @@ type Props = {
 export default async function BrowsePage({ params, searchParams }: Props) {
     const { locale } = await params
     const sp = await searchParams
+    const t = await getTranslations('browse')
 
     const page = parseInt(sp.page || '1', 10)
     const filters = {
@@ -39,10 +41,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
             <div className="max-w-6xl mx-auto px-4 py-6">
                 <div className="flex items-center justify-between mb-4">
                     <h1 className="text-xl font-bold text-royal-navy">
-                        {locale === 'lo' ? 'ເບິ່ງຊຸດທັງໝົດ' : 'Browse All'}
+                        {t('product')}
                     </h1>
                     <span className="text-sm text-navy-600">
-                        {result.total} {locale === 'lo' ? 'ລາຍການ' : 'items'}
+                        {result.total} {t('results')}
                     </span>
                 </div>
                 {/* Filters */}
@@ -58,10 +60,10 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                     <div className="text-center py-20">
                         <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-xl font-bold text-royal-navy mb-2">
-                            {locale === 'lo' ? 'ບໍ່ພົບສິນຄ້າ' : 'No items found'}
+                            {t('no_items')}
                         </h3>
                         <p className="text-navy-600 mb-6">
-                            {locale === 'lo' ? 'ລອງປ່ຽນ filter ຫຼື ຄົ້ນຫາໃໝ່' : 'Try different filters or search terms'}
+                            {t('try_filters')}
                         </p>
                     </div>
                 ) : (
@@ -72,12 +74,12 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                                 <table className="w-full text-sm">
                                     <thead>
                                         <tr className="bg-royal-navy/5 text-royal-navy text-xs">
-                                            <th className="text-left px-4 py-3 font-medium">{locale === 'lo' ? 'ສິນຄ້າ' : 'Product'}</th>
-                                            <th className="text-left px-4 py-3 font-medium">{locale === 'lo' ? 'ໝວດໝູ່' : 'Category'}</th>
-                                            <th className="text-left px-4 py-3 font-medium">{locale === 'lo' ? 'ໄຊສ໌' : 'Size'}</th>
-                                            <th className="text-left px-4 py-3 font-medium">{locale === 'lo' ? 'ສີ' : 'Color'}</th>
-                                            <th className="text-right px-4 py-3 font-medium">{locale === 'lo' ? 'ຄ່າເຊົ່າ' : 'Rental'}</th>
-                                            <th className="text-center px-4 py-3 font-medium">{locale === 'lo' ? 'ສະຖານະ' : 'Status'}</th>
+                                            <th className="text-left px-4 py-3 font-medium">{t('product')}</th>
+                                            <th className="text-left px-4 py-3 font-medium">{t('category')}</th>
+                                            <th className="text-left px-4 py-3 font-medium">{t('size')}</th>
+                                            <th className="text-left px-4 py-3 font-medium">{t('color')}</th>
+                                            <th className="text-right px-4 py-3 font-medium">{t('rental')}</th>
+                                            <th className="text-center px-4 py-3 font-medium">{t('status')}</th>
                                             <th className="text-center px-4 py-3 font-medium"></th>
                                         </tr>
                                     </thead>
@@ -116,7 +118,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                                                     </td>
                                                     <td className="px-4 py-3 text-center">
                                                         <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${availCount > 0 ? 'bg-emerald/10 text-emerald' : 'bg-red-50 text-red-500'}`}>
-                                                            {availCount > 0 ? `${availCount} ${locale === 'lo' ? 'ພ້ອມ' : 'avail'}` : (locale === 'lo' ? 'ເຕັມ' : 'Full')}
+                                                            {availCount > 0 ? `${availCount} ${t('available')}` : t('full')}
                                                         </span>
                                                     </td>
                                                     <td className="px-4 py-3 text-center">
@@ -124,7 +126,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                                                             href={`/${locale}/product/${product.id}`}
                                                             className="px-4 py-1.5 bg-champagne-gold/10 text-champagne-gold text-xs font-bold rounded-lg hover:bg-champagne-gold hover:text-white transition-all"
                                                         >
-                                                            {locale === 'lo' ? 'ເບິ່ງ' : 'View'}
+                                                            {t('view')}
                                                         </Link>
                                                     </td>
                                                 </tr>
@@ -158,7 +160,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                                             </div>
                                             <div className="absolute top-2 right-2">
                                                 <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${availCount > 0 ? 'bg-emerald/90 text-white' : 'bg-red-500/90 text-white'}`}>
-                                                    {availCount > 0 ? `${availCount} ✓` : (locale === 'lo' ? 'ເຕັມ' : 'Full')}
+                                                    {availCount > 0 ? `${availCount} ✓` : t('full')}
                                                 </span>
                                             </div>
                                         </div>
@@ -191,7 +193,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                                 className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-navy-600 hover:border-champagne-gold transition-all flex items-center gap-1"
                             >
                                 <ChevronLeft className="w-4 h-4" />
-                                {locale === 'lo' ? 'ກ່ອນ' : 'Prev'}
+                                {t('prev')}
                             </Link>
                         )}
 
@@ -213,7 +215,7 @@ export default async function BrowsePage({ params, searchParams }: Props) {
                                 href={`/${locale}/browse?page=${page + 1}${sp.category ? `&category=${sp.category}` : ''}${sp.size ? `&size=${sp.size}` : ''}${sp.search ? `&search=${sp.search}` : ''}`}
                                 className="px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-navy-600 hover:border-champagne-gold transition-all flex items-center gap-1"
                             >
-                                {locale === 'lo' ? 'ຖັດໄປ' : 'Next'}
+                                {t('next')}
                                 <ChevronRight className="w-4 h-4" />
                             </Link>
                         )}

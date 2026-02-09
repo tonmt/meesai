@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { getOwnerAssets, getOwnerRevenueSummary, getOwnerRecentBookings } from '@/actions/owner'
 import OwnerDashboard from '@/components/owner/OwnerDashboard'
+import { getTranslations } from 'next-intl/server'
 
 type Props = {
     params: Promise<{ locale: string }>
@@ -9,6 +10,7 @@ type Props = {
 
 export default async function OwnerPage({ params }: Props) {
     const { locale } = await params
+    const t = await getTranslations('owner_panel')
 
     const session = await auth()
     if (!session?.user) {
@@ -30,7 +32,7 @@ export default async function OwnerPage({ params }: Props) {
         <div className="min-h-screen hero-bg-light gold-dots-pattern">
             <div className="max-w-6xl mx-auto px-4 py-6">
                 <h1 className="text-xl font-bold text-royal-navy mb-4 flex items-center gap-2">
-                    🏪 {locale === 'lo' ? 'ຫ້ອງການເຈົ້າຂອງ' : 'Owner Dashboard'}
+                    🏪 {t('title')}
                 </h1>
                 <OwnerDashboard
                     assets={assets || []}
