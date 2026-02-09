@@ -3,8 +3,9 @@
 import { useTranslations, useLocale } from 'next-intl';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { Phone, Lock, User, Eye, EyeOff, ArrowLeft, Loader2 } from 'lucide-react';
-import { registerUser, loginUser } from '@/actions/auth';
+import { registerUser } from '@/actions/auth';
 
 export default function LoginPage() {
     const t = useTranslations('login');
@@ -23,28 +24,52 @@ export default function LoginPage() {
         setSuccess('');
 
         const formData = new FormData(e.currentTarget);
+        const phone = formData.get('phone') as string;
+        const password = formData.get('password') as string;
 
         try {
             if (mode === 'register') {
                 const result = await registerUser(formData);
                 if (result.success) {
-                    router.push(`/${locale}`);
-                    router.refresh();
+                    // Auto-login after register via client-side signIn
+                    const res = await signIn('credentials', {
+                        phone,
+                        password,
+                        redirect: false,
+                    });
+                    if (res?.ok) {
+                        router.push(`/${locale}`);
+                        router.refresh();
+                    } else {
+                        // Registered but auto-login failed — redirect to login
+                        setSuccess('ສະໝັກສຳເລັດ! ກະລຸນາເຂົ້າສູ່ລະບົບ');
+                        setMode('login');
+                    }
                 } else {
                     setError(result.error || 'Error');
                 }
             } else {
-                const result = await loginUser(formData);
-                if (result.success) {
-                    // Role-based redirect
-                    const dest = result.role === 'ADMIN' ? `/${locale}/admin`
-                        : result.role === 'OWNER' ? `/${locale}/owner`
-                            : result.role === 'STAFF' ? `/${locale}/staff`
+                // Client-side signIn — properly sets session cookie
+                const res = await signIn('credentials', {
+                    phone,
+                    password,
+                    redirect: false,
+                });
+
+                if (res?.ok) {
+                    // Fetch session to get role for redirect
+                    const sessionRes = await fetch('/api/auth/session');
+                    const session = await sessionRes.json();
+                    const role = session?.user?.role || 'RENTER';
+
+                    const dest = role === 'ADMIN' ? `/${locale}/admin`
+                        : role === 'OWNER' ? `/${locale}/owner`
+                            : role === 'STAFF' ? `/${locale}/staff`
                                 : `/${locale}`;
                     router.push(dest);
                     router.refresh();
                 } else {
-                    setError(result.error || 'Error');
+                    setError(t('error'));
                 }
             }
         } catch {
