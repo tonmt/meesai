@@ -4,6 +4,10 @@
         "description": "Rent brand-name outfits, hotel-grade clean, book easily on mobile"
     },
     "nav": {
+        "home": "Home",
+        "browse": "Browse",
+        "how_it_works": "How It Works",
+        "contact": "Contact",
         "search_placeholder": "🔍 Wedding? Pink theme? Or brand-name dress?",
         "wishlist": "Wishlist",
         "rent_bag": "Rent Bag",
@@ -53,6 +57,11 @@
         "cta": "Get a Free Asset Valuation"
     },
     "footer": {
+        "quick_links": "Quick Links",
+        "about": "About Us",
+        "how_it_works": "How It Works",
+        "faq": "FAQ",
+        "blog": "Blog",
         "terms": "Penalty Policy",
         "refund": "Refund Policy",
         "insurance": "Insurance",

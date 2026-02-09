@@ -2,7 +2,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* ─── MeeSai Color System ─── */
+  /* ─── MeeSai Color System (Light Theme) ─── */
   --color-royal-navy: #0F172A;
   --color-navy-800: #1E293B;
   --color-navy-700: #334155;
@@ -26,7 +26,7 @@
   --font-sans-lao: 'Noto Sans Lao', 'Inter', sans-serif;
 }
 
-/* ─── Base Styles ─── */
+/* ─── Base Styles (Light Theme) ─── */
 html {
   scroll-behavior: smooth;
 }
@@ -34,14 +34,14 @@ html {
 body {
   font-family: var(--font-sans-lao);
   color: var(--color-royal-navy);
-  background: var(--color-off-white);
+  background: #FFFFFF;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* ─── Gold Text Gradient ─── */
 .text-gold-gradient {
-  background: linear-gradient(135deg, var(--color-gold-light), var(--color-champagne-gold), var(--color-gold-dark));
+  background: linear-gradient(135deg, var(--color-gold-dark), var(--color-champagne-gold), var(--color-gold-dark));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -60,7 +60,7 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
   animation: shimmer 3s infinite;
 }
 
@@ -74,19 +74,28 @@ body {
   }
 }
 
-/* ─── Glass Effect ─── */
+/* ─── Glass Effect (Light Theme) ─── */
 .glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.glass-light {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* ─── Glass Dark (for sections that need dark bg) ─── */
+.glass-dark {
   background: rgba(15, 23, 42, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(212, 175, 55, 0.15);
-}
-
-.glass-light {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 /* ─── Animations ─── */
@@ -126,6 +135,26 @@ body {
   }
 }
 
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
 .animate-fade-in-up {
   animation: fadeInUp 0.8s ease-out forwards;
 }
@@ -136,6 +165,14 @@ body {
 
 .animate-pulse-gold {
   animation: pulse-gold 2s ease-in-out infinite;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out forwards;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.3s ease-out forwards;
 }
 
 /* ─── Scroll snap for occasions ─── */
@@ -156,4 +193,15 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* ─── Light Hero Background ─── */
+.hero-bg-light {
+  background: linear-gradient(180deg, #F8F6F0 0%, #FFFFFF 40%, #FBF9F4 100%);
+}
+
+/* ─── Decorative Gold Dots ─── */
+.gold-dots-pattern {
+  background-image: radial-gradient(circle, rgba(212, 175, 55, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
