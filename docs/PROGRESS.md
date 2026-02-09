@@ -10,115 +10,122 @@
 |:---:|:---|:---:|
 | **1** | Foundation — Landing Page + Infrastructure | ✅ Complete |
 | **2** | Light Theme + Responsive Perfection | ✅ Complete |
-| **3** | Auth + Booking Flow + Payment | 🔲 Not Started |
+| **2.5** | Business Architecture (5 เสาเข็ก) | ✅ Complete |
+| **3** | เดินระบบไฟ — Auth + Booking Logic + Seed Data | 🔲 Next Sprint |
 | **4** | Owner Portal + Admin Panel | 🔲 Not Started |
-| **5** | Mobile App (PWA) + Analytics | 🔲 Not Started |
+| **5** | Payment + Wallet + Go-Live | 🔲 Not Started |
 
 ---
 
 ## Phase 1: Foundation ✅
 
-> **Goal:** สร้าง Landing Page + โครงสร้างพื้นฐาน
-
 - [x] Next.js 16.1.6 + TypeScript + Tailwind CSS v4
-- [x] Prisma 6 + PostgreSQL schema (6 models, 4 enums)
+- [x] Prisma 6 + PostgreSQL schema
 - [x] next-intl bilingual (LO / EN)
 - [x] Docker Compose — 4-container isolated stack
-- [x] Landing Page 8 sections (monolithic page.tsx)
+- [x] Landing Page 8 sections
 - [x] Go-Live → `https://meesai.vgroup.work`
 - [x] GitHub → `tonmt/meesai` (private)
 
 ---
 
-## Phase 2: Light Theme + Responsive Perfection ✅
+## Phase 2: Light Theme + Responsive ✅
 
-> **Goal:** ปรับ Light Theme + Desktop/Mobile responsive perfect
-
-### ✅ Theme Change (Dark → Light)
-- [x] Body background: Navy → White
-- [x] Glass header: Dark blur → White blur + subtle shadow
-- [x] Hero: Navy gradient → Cream gradient + gold dots pattern
-- [x] Text: White → Royal Navy
-- [x] Footer/BottomNav: Navy → White
-- [x] สี accent คงเดิม (Champagne Gold, Emerald, Danger)
-
-### ✅ Component Refactoring
-- [x] page.tsx 506 lines → 26 lines (import + compose)
-- [x] 8 modular components ใน `src/components/landing/`
-  - `StickyHeader.tsx` — Desktop nav + hamburger + slide-in drawer
-  - `HeroSection.tsx` — Split layout PC, center mobile
-  - `BookingEngine.tsx` — Grid 1→4 responsive
-  - `OccasionNav.tsx` — Scroll mobile → grid 6 desktop
-  - `DynamicFeed.tsx` — Sidebar filter PC + bottom sheet mobile
-  - `TrustSection.tsx` — Cards with hover elevation
-  - `OwnerZone.tsx` — Split layout + 3 benefit cards
-  - `Footer.tsx` — 4-column + social icons
-  - `BottomNav.tsx` — White bg + champagne gold active
-
-### ✅ Desktop Responsive
-- [x] Header: Nav links (ໜ້າຫຼັກ, ເຊົ່າຊຸດ, ວິທີການ, ຕິດຕໍ່)
-- [x] Hero: Split layout (text left + card showcase right)
-- [x] Feed: Sidebar filter panel (sticky)
-- [x] Owner Zone: Split layout + 3 benefit cards
-- [x] Footer: 4 columns + social icons (FB, IG, TikTok)
-
-### ✅ Mobile Responsive
-- [x] Hamburger menu → slide-in drawer
-- [x] Feed filter → bottom sheet modal
-- [x] OccasionNav → horizontal scroll with snap
-- [x] BottomNav → 5 tabs with safe-area
-
-### ✅ New CSS & Animations
-- [x] `hero-bg-light`, `gold-dots-pattern`
-- [x] `animate-slide-in-right`, `animate-slide-in-up`
-- [x] `glass-dark` (retained for future dark sections)
-
-### ✅ Translations
-- [x] Added: `nav.home`, `nav.browse`, `nav.how_it_works`, `nav.contact`
-- [x] Added: `footer.quick_links`, `footer.about`, `footer.faq`, `footer.blog`
+- [x] Refactor page.tsx 506→26 lines → 8 modular components
+- [x] Light Theme (White bg, light glass, cream hero)
+- [x] Desktop + Mobile responsive all sections
+- [x] Updated translations (LO/EN)
 
 ---
 
-## Phase 3: Auth + Booking Flow 🔲
+## Phase 2.5: Business Architecture ✅
 
-> **Goal:** Login/Register → Browse → Book → Pay → Track
+- [x] 5 Technical Pillars จาก Executive Blueprint
+- [x] Schema redesign: 6→12 models, 4→8 enums
+- [x] Product/ItemAsset split (SKU vs ตัวจริง)
+- [x] FSM 9-state AssetStatus + audit log
+- [x] Double-Entry Transaction ledger
+- [x] EvidenceLog + MaintenanceLog
+- [x] `docs/BUSINESS_ARCHITECTURE.md`
 
-### Auth System
-- [ ] Phone + OTP login (SMS via Lao provider)
-- [ ] Social login (Facebook, LINE)
-- [ ] User profile management
-- [ ] Role-based access (Renter / Owner / Admin)
+---
 
-### Booking Flow
-- [ ] Item detail page (images gallery, availability calendar)
-- [ ] Booking wizard (select dates → confirm → pay)
-- [ ] Buffer Time validation (prevent double-booking)
-- [ ] Booking status tracking
+## Phase 3: เดินระบบไฟ 🔲
 
-### Payment Integration
-- [ ] BCEL One QR payment
-- [ ] OnePay integration
-- [ ] Deposit + rental fee split
+> **Goal:** "บ้านที่สร้างเสร็จ → เดินสายไฟ → เปิดใช้งานจริง"
+> จาก Executive Review: เชื่อมหน้าบ้าน-หลังบ้าน ให้เกิด Transaction แรก
+
+### Sprint 3.1: Database Migration + Seed Data
+
+> *"เติมของเข้าบ้าน"* — ข้อมูลจริงแทน Mock Data
+
+- [ ] `prisma db push` สร้าง tables จาก schema ใหม่ (12 models)
+- [ ] Seed script: 6 Categories + 20 Products + 30 ItemAssets
+- [ ] Seed: 3 Owner users + 5 Renter users + 1 Admin + 1 Staff
+- [ ] Seed: SystemConfig (BUFFER_DAYS=3, SERVICE_FEE_PERCENT=15)
+- [ ] DynamicFeed.tsx → ดึงข้อมูลจริงจาก DB แทน mock
+
+### Sprint 3.2: Authentication
+
+> *"ทำกุญแจบ้าน"* — รู้ว่าใครเป็นใคร
+
+- [ ] NextAuth.js setup (Phone OTP เป็นหลัก)
+- [ ] Login/Register page
+- [ ] Session management + role-based access
+- [ ] Protected routes (Booking ต้อง login)
+
+### Sprint 3.3: Booking Logic (Wire to DB)
+
+> *"เดินระบบไฟ"* — กดจองแล้วเกิดขึ้นจริง
+
+- [ ] Server Action: `checkAvailability(assetId, pickupDate, returnDate)`
+- [ ] Server Action: `createBooking()` with `$transaction` lock
+- [ ] Buffer Time auto-calculation (returnDate + BUFFER_DAYS)
+- [ ] BookingEngine.tsx → เชื่อมกับ Server Action จริง
+- [ ] Booking confirmation page + QR Code
+- [ ] FSM: `transitionAssetStatus()` enforced transitions
+
+### Sprint 3.4: Product Detail Page
+
+- [ ] `/[locale]/product/[id]` — รายละเอียดชุด
+- [ ] Image gallery + zoom
+- [ ] Availability calendar (visual)
+- [ ] Size guide + condition info
+- [ ] "จองเลย" button → Booking flow
 
 ---
 
 ## Phase 4: Owner Portal + Admin 🔲
 
-> **Goal:** เจ้าของชุดจัดการ asset + Admin ดูแลระบบ
+> จาก Owner Review: "ข้อเสนอ 0% GP น่าสนใจ แต่จะส่งของให้ยังไง?"
 
-- [ ] Owner: Item CRUD + photo upload (MinIO)
-- [ ] Owner: Wallet dashboard + payout
-- [ ] Admin: Dashboard KPI
-- [ ] Admin: User/Item moderation
-- [ ] Admin: Booking/Payout management
+- [ ] Owner registration + KYC (บัตร ปชช.)
+- [ ] Owner Dashboard: ชุดของฉัน / รายได้ / สถิติ
+- [ ] Item onboarding: ฝากชุด → Screening → Grading → Digitize
+- [ ] Wallet dashboard (real-time earnings from Transaction ledger)
+- [ ] Admin Dashboard: KPI, User moderation, Item management
+- [ ] Payout system (monthly cycle, 1st/15th)
 
 ---
 
-## Phase 5: Mobile + Scale 🔲
+## Phase 5: Payment + Scale 🔲
 
-> **Goal:** PWA + Analytics + Marketing
+> จาก Executive Review: "ต้องเร่งเรื่องระบบเงิน"
 
-- [ ] PWA (installable, offline-capable)
-- [ ] Google Analytics / Mixpanel
-- [ ] Referral program + promo codes
-- [ ] Multi-city expansion
+- [ ] BCEL One QR payment integration
+- [ ] Deposit flow (hold + refund after QC)
+- [ ] E-Receipt generation
+- [ ] EvidenceLog: Check-out/Check-in photos (MinIO)
+- [ ] Damage assessment + deduction flow
+- [ ] PWA (installable, push notifications)
+- [ ] Analytics (revenue, utilization rate, customer retention)
+
+---
+
+## Executive 360° Review Summary (2026-02-09)
+
+| มุมมอง | คะแนน | Key Feedback |
+|:---|:---:|:---|
+| **ผู้บริหาร** | ★★★★☆ | โครงสร้างดี tech stack ใหม่สุด ต้องเร่ง Phase 3 |
+| **ผู้เช่า** | ★★★☆☆ | UI สวยน่าใช้ แต่จองจริงยังไม่ได้ |
+| **เจ้าของชุด** | ★★★☆☆ | 0% GP น่าสนใจ แต่ยังไม่มี Dashboard |
