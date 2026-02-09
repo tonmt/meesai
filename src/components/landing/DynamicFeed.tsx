@@ -44,14 +44,13 @@ export default function DynamicFeed({ products, categories }: Props) {
                     <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-royal-navy" style={{ fontFamily: 'var(--font-serif-lao)' }}>
                         {t('feed.title')}
                     </h3>
-                    <button
-                        disabled
-                        title={locale === 'lo' ? 'ເປີດໃຊ້ໃນ Sprint 4' : 'Coming Sprint 4'}
-                        className="flex items-center gap-1 text-gray-400 text-sm font-medium cursor-not-allowed"
+                    <Link
+                        href={`/${locale}/browse`}
+                        className="flex items-center gap-1 text-champagne-gold text-sm font-medium hover:text-royal-navy transition-colors"
                     >
-                        <Lock className="w-3 h-3" />
                         <span>{locale === 'lo' ? 'ເບິ່ງທັງໝົດ' : 'View All'}</span>
-                    </button>
+                        <ArrowRight className="w-4 h-4" />
+                    </Link>
                 </div>
 
                 {/* Mobile Filter Chips */}
