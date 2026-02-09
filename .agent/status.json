@@ -1,9 +1,9 @@
 {
     "turn": "reviewer",
-    "sprint": "5.0",
-    "feature": "Unified Navigation System",
-    "lastUpdate": "2026-02-09T22:06:00+07:00",
+    "sprint": "5.2",
+    "feature": "Unified Navigation + User Profile",
+    "lastUpdate": "2026-02-09T22:15:00+07:00",
     "cycle": 0,
     "lastVerdict": "PENDING",
-    "directorNote": "Director กำลัง poll รออยู่ — อย่าหยุด review ทันที! Reviewer พร้อม review แล้ว"
+    "directorNote": "Sprint 5.0 + 5.2 ส่งมอบ — Navigation + Profile page + Login cleanup — พร้อม review"
 }

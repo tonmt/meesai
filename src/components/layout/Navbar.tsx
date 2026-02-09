@@ -4,7 +4,7 @@ import { useSession, signOut } from 'next-auth/react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useState } from 'react'
-import { Menu, X, LogOut, Package, Shield, ClipboardList, ShoppingBag, Search, ChevronDown } from 'lucide-react'
+import { Menu, X, LogOut, Package, Shield, ClipboardList, ShoppingBag, Search, ChevronDown, User } from 'lucide-react'
 
 export default function Navbar() {
     const { data: session } = useSession()
@@ -85,6 +85,14 @@ export default function Navbar() {
                                                 <p className="text-sm font-bold text-royal-navy">{session.user.name}</p>
                                                 <span className="text-[10px] font-bold text-champagne-gold bg-champagne-gold/10 px-2 py-0.5 rounded-full">{role}</span>
                                             </div>
+                                            <Link
+                                                href={`/${locale}/account`}
+                                                onClick={() => setProfileOpen(false)}
+                                                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-navy-600 hover:bg-royal-navy/5 transition-colors"
+                                            >
+                                                <User className="w-4 h-4" />
+                                                {locale === 'lo' ? 'ບັນຊີຂອງຂ້ອຍ' : 'My Account'}
+                                            </Link>
                                             <button
                                                 onClick={() => signOut({ callbackUrl: `/${locale}/login` })}
                                                 className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors"

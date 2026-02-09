@@ -1,46 +1,69 @@
-# 📋 REVIEW — Sprint 4.1 + 4.2 Cycle 2: Owner/Admin/Staff — MUST Fix Verification
+# 📋 REVIEW — Sprint 5.0: Unified Navigation System
 
-> MeeSai Director (Reviewer Agent) · 2026-02-09 21:50 · Cycle 2
+> MeeSai Director (Reviewer Agent) · 2026-02-09 22:05 · Cycle 1
 
-## Verdict: � APPROVED
-
----
-
-## MUST #1 Fix — ✅ VERIFIED
-
-| Location | Before (❌) | After (✅) |
-|:---------|:-----------|:----------|
-| `owner.ts` L50 | `getWalletBalance(session.user.id)` | `wallet ? getWalletBalance(wallet.id) : 0` |
-| `owner.ts` L175 | `getWalletBalance(session.user.id)` | `getWalletBalance(wallet.id)` — wallet lookup moved before balance check |
-
-**Impact:** Owner Wallet balance + Payout request ทำงานถูกต้องแล้ว ✅
+## Verdict: 🟢 APPROVED
 
 ---
 
-## Sprint 4 Summary — COMPLETE 🎉
+## 🎩 Executive Review — ✅ ยอดเยี่ยม
+
+### Navbar.tsx (183 lines) ✅
+- **Role-based links:** RENTER→Browse/Bookings, OWNER→+Dashboard, STAFF→+Panel, ADMIN→All
+- **Profile dropdown:** avatar initial + name + role badge + signOut ✅
+- **Mobile hamburger:** full menu with role links ✅
+- **Overlay dismiss:** `fixed inset-0` backdrop to close dropdown ✅
+- **Bilingual:** ພາສາລາວ / English ทุก link ✅
+
+### BottomNav.tsx (57 lines) ✅
+- **Mobile-only:** `md:hidden` ✅
+- **4 tabs:** Home, Browse, Bookings + 1 role-specific tab ✅
+- **Smart tab selection:** `roleItems.slice(0, 1)` — แสดง tab ที่สำคัญที่สุดของ role นั้น
+- **Fallback:** ถ้าไม่มี role tab → แสดง Account tab ✅
+- **Scale animation:** `group-hover:scale-110` ✅
+
+### Layout Integration ✅
+```
+<body pb-16 md:pb-0>          ← safe area for BottomNav
+  <SessionProvider>
+    <NextIntlClientProvider>
+      <Navbar />               ← sticky top
+      <main>{children}</main>  ← content
+      <BottomNav />            ← fixed bottom (mobile)
+    </NextIntlClientProvider>
+  </SessionProvider>
+</body>
+```
+
+### Page Cleanup (8 pages) ✅
+- Landing: StickyHeader + old BottomNav removed ✅
+- Browse, Product, Booking, Bookings, Payment: inline headers removed ✅
+- Owner, Admin, Staff: inline sticky headers removed ✅
+
+## 🧢 Renter Review — ✅
+- Nav สะอาด ไม่ซ้ำซ้อน — 1 Navbar บน + 1 BottomNav mobile
+- Profile dropdown แสดง role + signOut ✅
+
+## 👒 Admin Review — ✅
+- Admin เห็นทุก tab (Browse, Bookings, Owner, Staff, Admin) ✅
+- Role badge แสดงใน profile dropdown ✅
+
+---
+
+## Sprint 3-5 Cumulative Summary 🎉
 
 | Sprint | Feature | Verdict |
 |:-------|:--------|:--------|
-| 4.1 | Owner Dashboard (4 tabs) + Admin Dashboard (4 tabs) | 🟢 APPROVED (C2) |
-| 4.2 | Staff Panel (check-in/out + barcode lookup) | 🟢 APPROVED |
+| 3.1-3.2 | DB Seed + Auth | 🟢 |
+| 3.3 | Booking + FSM | 🟢 (C2) |
+| 3.4 | Payment + Ledger + QR | 🟢 |
+| 3.5 | Product Detail + Browse | 🟢 |
+| 4.1 | Owner + Admin Dashboard | 🟢 (C2) |
+| 4.2 | Staff Check-in/out | 🟢 |
+| **5.0** | **Unified Navigation** | **🟢** |
 
-### Three Portals Delivered
-- 🏪 **Owner** (`/owner`) — สินค้า, รายได้, ถอนเงิน, ประวัติ
-- ⚙️ **Admin** (`/admin`) — users, bookings, revenue, platform stats
-- 📋 **Staff** (`/staff`) — check-out/in, barcode lookup, today's schedule
-
-### All 5 Pillars Active
-1. **Concurrency:** `$transaction` ทุก mutation ✅
-2. **FSM:** check-in branching (GOOD→AVAILABLE / DAMAGED→MAINTENANCE) ✅
-3. **Inventory ID:** barcode/assetCode lookup ✅
-4. **Double-Entry:** payout = `sourceWalletId` debit + payout record ✅
-5. **Audit Trail:** StatusTransition + EvidenceLog ทุก check-in/out ✅
-
----
-
-## Next Sprint: 5.0 — Notification + StickyHeader Nav Integration
-
-แนะนำ:
-1. StickyHeader links — เชื่อม Owner/Admin/Staff ตาม role
-2. Notification system — booking confirmed, payment received, check-in reminder
-3. Role-based BottomNav — Renter/Owner/Staff/Admin แสดงเมนูต่างกัน
+### Platform Status: Production-Ready MVP 🚀
+```
+11 Routes · 3 Portals · 5 Pillars Active · Bilingual UI
+Browse → Detail → Calendar → Book → Pay → Receipt → Dashboard → Check-in/out
+```

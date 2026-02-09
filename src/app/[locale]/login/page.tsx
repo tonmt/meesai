@@ -52,14 +52,6 @@ export default function LoginPage() {
     return (
         <div className="min-h-screen flex items-center justify-center px-4 py-12 hero-bg-light gold-dots-pattern">
             <div className="w-full max-w-md">
-                {/* Back Button */}
-                <button
-                    onClick={() => router.push(`/${locale}`)}
-                    className="flex items-center gap-2 text-navy-600 hover:text-champagne-gold mb-8 transition-colors"
-                >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span className="text-sm">{locale === 'lo' ? 'ກັບໜ້າຫຼັກ' : 'Back to Home'}</span>
-                </button>
 
                 {/* Card */}
                 <div className="glass rounded-3xl p-8 shadow-xl border border-white/60">
