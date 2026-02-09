@@ -1,36 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MeeSai (ມີໃສ່) — Fashion Bank of Laos
 
-## Getting Started
+> **ຢູ່ໃສບໍ່ມີ... ມາພີ້ 'ມີໃສ່'**
+> O2O Fashion Rental Platform · Vientiane, Laos
 
-First, run the development server:
+[![Live](https://img.shields.io/badge/Live-meesai.vgroup.work-D4AF37?style=flat-square)](https://meesai.vgroup.work)
+[![Version](https://img.shields.io/badge/Version-0.1.0-0F172A?style=flat-square)](#)
+[![Phase](https://img.shields.io/badge/Phase-1%20Foundation-10B981?style=flat-square)](#)
 
+---
+
+## 🎯 Vision
+
+MeeSai เป็นแพลตฟอร์ม **เช่าชุดแฟชั่น** แบบ Online-to-Offline สำหรับประเทศลาว ด้วยโมเดล **Zero GP (0% Commission)** — เรียกเก็บเฉพาะค่าบริการ ไม่หักค่าหัวคิวจากเจ้าของชุด
+
+### Core Concept: Fashion Bank
+- ชุดทุกตัวเป็น **ทรัพย์สิน (Asset)** ที่สร้างรายได้ passive income
+- เจ้าของชุดฝากชุดเข้าระบบ → ระบบจัดการเช่า → เงินเข้า Wallet
+- ผู้เช่าได้ชุดคุณภาพ ผ่านมาตรฐาน Hygiene + Buffer Time
+
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|:---|:---|
+| **Framework** | Next.js 16.1.6 (App Router, Turbopack) |
+| **Language** | TypeScript (Strict Mode) |
+| **Styling** | Tailwind CSS v4 |
+| **Database** | PostgreSQL 16 + Prisma 6 |
+| **Storage** | MinIO (S3 Compatible) |
+| **Cache** | Redis 7 |
+| **i18n** | next-intl (ລາວ / English) |
+| **Icons** | Lucide React |
+| **Deploy** | Docker Compose (Isolated Stack) |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 20+
+- Docker + Docker Compose
+
+### Development
 ```bash
+# Install dependencies
+npm install
+
+# Generate Prisma client
+npx prisma generate
+
+# Start dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Production (Docker)
+```bash
+# Build & deploy all containers
+docker compose up -d --build
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Check health
+docker ps --filter "name=meesai"
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🐳 Infrastructure
 
-To learn more about Next.js, take a look at the following resources:
+| Container | Port | Service |
+|:---|:---:|:---|
+| `meesai-app` | 4200 | Next.js Application |
+| `meesai-postgres` | 4203 | PostgreSQL 16 |
+| `meesai-minio` | 4204 / 4205 | MinIO API / Console |
+| `meesai-redis` | 4206 | Redis 7 |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Subdomain:** [meesai.vgroup.work](https://meesai.vgroup.work)
+**SSL:** Cloudflare (auto, proxied)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📁 Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+meesai/
+├── src/
+│   ├── app/
+│   │   ├── globals.css          # Design System (tokens, animations)
+│   │   ├── layout.tsx           # Root Layout
+│   │   └── [locale]/
+│   │       ├── layout.tsx       # Locale Layout (NextIntlClientProvider)
+│   │       └── page.tsx         # Landing Page (8 Sections)
+│   ├── i18n/
+│   │   ├── navigation.ts       # Link, redirect, usePathname, useRouter
+│   │   ├── request.ts          # Locale detection + message loading
+│   │   └── routing.ts          # Supported locales config
+│   └── middleware.ts            # Locale routing middleware
+├── messages/
+│   ├── lo.json                  # ภาษาลาว (Primary)
+│   └── en.json                  # English (Secondary)
+├── prisma/
+│   └── schema.prisma            # Database schema (6 models)
+├── docker-compose.yml           # Isolated 4-container stack
+├── Dockerfile                   # Multi-stage production build
+└── docs/
+    ├── ARCHITECTURE.md          # System architecture
+    └── PROGRESS.md              # Phase progress tracker
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📚 Documentation
+
+| Document | Description |
+|:---|:---|
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design, database schema, design system |
+| [PROGRESS.md](docs/PROGRESS.md) | Phase tracker — what's done, what's next |
+| [CHANGELOG.md](CHANGELOG.md) | Version history |
+
+---
+
+## 📄 License
+
+Private — DDC Groups / V-Group
