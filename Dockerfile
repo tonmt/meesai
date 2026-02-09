@@ -1,17 +1,14 @@
 FROM node:20-alpine AS base
 
-# ─── Dependencies ───
-FROM base AS deps
+# ─── Builder (needs ALL deps for prisma + next build) ───
+FROM base AS builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
-
-# ─── Builder ───
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+RUN npm ci
 COPY . .
+# Prisma needs DATABASE_URL at generate time (validation only, no connection)
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 RUN npx prisma generate
 RUN npm run build
 
