@@ -33,8 +33,18 @@ cat /mnt/DiskHik/CODE/meesai/.agent/status.json && echo "---" && ls -la /mnt/Dis
      - **ไม่มี REVIEW.md** + `lastVerdict` = `"APPROVED"` → เริ่มงานใหม่ตาม `directorNote` → ไป Phase 3
      - **ไม่มี REVIEW.md** + `lastVerdict` ≠ `"APPROVED"` → อ่าน `directorNote` → ไป Phase 3
 
-4. ถ้า `turn` ≠ `"coder"` → **หยุดเดี๋ยวนั้น** แจ้ง user แล้วจบ:
-   > "⏳ `turn` ≠ coder — รอก่อน"
+4. ถ้า `turn` = `"complete"` (Phase/Sprint จบแล้ว):
+   - ตรวจ `directorNote`:
+     - **มี directorNote** → เริ่ม sprint ใหม่อัตโนมัติ:
+       1. อ่าน `directorNote` เป็น scope งาน
+       2. Bump sprint number (เช่น 7.1 → 8.0)
+       3. อัพเดท `status.json`: `turn→"coder"`, `sprint→"X.Y"`, `cycle→0`
+       4. ไป Phase 3
+     - **ไม่มี directorNote** → แจ้ง user:
+       > "📋 `turn: complete` แต่ไม่มี `directorNote` — กรุณาใส่คำสั่ง sprint ถัดไปใน status.json"
+
+5. ถ้า `turn` = `"reviewer"` → **หยุดเดี๋ยวนั้น** แจ้ง user แล้วจบ:
+   > "⏳ `turn: reviewer` — รอ Reviewer ทำงานเสร็จก่อน สั่ง `/reviewer-loop` ใน Tab Reviewer"
 
 ## Phase 3 — Implementation (ทำงานจริง — ห้ามหยุดกลางทาง)
 

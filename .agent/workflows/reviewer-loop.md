@@ -35,8 +35,11 @@ cat /mnt/DiskHik/CODE/meesai/.agent/status.json && echo "---" && ls -la /mnt/Dis
    - ต้องมี `DONE.md` → อ่าน → ไป Phase 3
    - ถ้าไม่มี `DONE.md` → conflict → แจ้ง user แล้วจบ
 
-3. ถ้า `turn` ≠ `"reviewer"` → **หยุดเดี๋ยวนั้น** แจ้ง user แล้วจบ:
-   > "⏳ `turn` ≠ reviewer — รอก่อน"
+3. ถ้า `turn` = `"complete"` → **แจ้ง user**:
+   > "✅ Sprint จบแล้ว ไม่มีอะไรให้ review — สั่ง `/coder-loop` ใน Tab Coder เพื่อเริ่ม sprint ใหม่ (Coder จะอ่าน `directorNote` แล้วเริ่มเอง)"
+
+4. ถ้า `turn` = `"coder"` → **แจ้ง user**:
+   > "⏳ `turn: coder` — รอ Coder ทำงานเสร็จก่อน สั่ง `/coder-loop` ใน Tab Coder"
 
 ## Phase 3 — Review (ทำทุกข้อ ห้ามข้าม ห้ามแจ้ง user ระหว่างนี้)
 

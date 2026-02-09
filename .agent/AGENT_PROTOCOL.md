@@ -1,7 +1,7 @@
-# 🔄 MeeSai Dual-Agent Protocol v2
+# 🔄 MeeSai Dual-Agent Protocol v3
 
 > Coder Agent ↔ Reviewer Agent Communication Standard
-> Updated: 2026-02-09 · Based on 12+ sprint production experience
+> Updated: 2026-02-09 · Based on 14+ sprint production experience
 
 ## Architecture
 
@@ -19,7 +19,7 @@
 
 ```
 meesai/.agent/
-├── AGENT_PROTOCOL.md        # ← เอกสารนี้ (v2)
+├── AGENT_PROTOCOL.md        # ← เอกสารนี้ (v3)
 ├── status.json              # สถานะปัจจุบัน + sprint history
 └── handoff/
     ├── DONE.md              # Coder → Reviewer (ส่งมอบงาน)
@@ -48,7 +48,7 @@ meesai/.agent/
 
 | Field | Type | Description |
 |:---|:---|:---|
-| `turn` | `"coder"` \| `"reviewer"` | ใครควรทำงานตอนนี้ |
+| `turn` | `"coder"` \| `"reviewer"` \| `"complete"` | ใครควรทำงานตอนนี้ |
 | `sprint` | string | Sprint ปัจจุบัน |
 | `feature` | string | ชื่อ feature ที่ทำ |
 | `lastUpdate` | ISO datetime | เวลาอัพเดทล่าสุด |
@@ -56,6 +56,17 @@ meesai/.agent/
 | `lastVerdict` | `"APPROVED"` \| `"REVISE"` \| `"REJECT"` \| `"PENDING"` | ผลตัดสินล่าสุด |
 | `directorNote` | string | คำสั่งจาก Director (user) สำหรับ sprint ถัดไป |
 | `history` | array | ประวัติ sprint ที่ผ่านมา (append-only) |
+
+### Turn States
+
+| State | Meaning | Who acts? |
+|:---|:---|:---|
+| `"coder"` | Coder ต้องทำงาน (implement / fix feedback) | Coder Agent |
+| `"reviewer"` | Reviewer ต้อง review | Reviewer Agent |
+| `"complete"` | Sprint/Phase จบแล้ว รอ Director สั่งต่อ | **Coder Agent** — ถ้ามี `directorNote` → เริ่ม sprint ใหม่อัตโนมัติ |
+
+> ⚠️ **`turn: "complete"` ไม่ใช่ dead-end** — Coder จะรับคำสั่งจาก `directorNote` แล้วเริ่ม sprint ใหม่เอง
+> Reviewer เจอ `turn: "complete"` → ไม่มีอะไรให้ review → แจ้ง user ให้ไป `/coder-loop`
 
 ---
 
