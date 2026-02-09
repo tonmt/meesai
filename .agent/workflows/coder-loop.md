@@ -6,9 +6,10 @@ description: Coder Agent workflow v3 - อ่าน review + implement + build +
 
 // turbo-all
 
-> ⚠️ **CRITICAL: DO NOT STOP until Phase 5 is complete.**
-> คุณ **ห้ามหยุด** กลางทาง — ต้องทำจนจบ Phase 5 (Handoff) ทุกครั้ง
+> ⚠️ **CRITICAL: DO NOT STOP until Phase 6 notification is sent.**
+> คุณ **ห้ามหยุด** กลางทาง — ต้องทำจนจบ Phase 6 ทุกครั้ง
 > ถ้าทำไม่จบ = ระบบจะค้าง = user ต้องมาแก้เอง = UNACCEPTABLE
+> **ห้ามถาม user ว่า "ทำต่อไหม" หรือ "ข้ามได้ไหม"** — ทำจนจบเสมอ
 
 ---
 
@@ -19,7 +20,7 @@ description: Coder Agent workflow v3 - อ่าน review + implement + build +
 cd /mnt/DiskHik/CODE/meesai && kill -9 $(ps aux | grep 'git' | grep -v grep | awk '{print $2}') 2>/dev/null; sleep 1; rm -f .git/index.lock .git/COMMIT_EDITMSG.lock 2>/dev/null; echo "GIT_CLEAN"
 ```
 
-2. ตรวจสอบ status + handoff directory (ข้ามอ่าน protocol ได้ถ้าอ่านแล้ว)
+2. ตรวจสอบ status + handoff directory
 ```
 cat /mnt/DiskHik/CODE/meesai/.agent/status.json && echo "---" && ls -la /mnt/DiskHik/CODE/meesai/.agent/handoff/
 ```
@@ -35,19 +36,24 @@ cat /mnt/DiskHik/CODE/meesai/.agent/status.json && echo "---" && ls -la /mnt/Dis
 4. ถ้า `turn` ≠ `"coder"` → **หยุดเดี๋ยวนั้น** แจ้ง user แล้วจบ:
    > "⏳ `turn` ≠ coder — รอก่อน"
 
-## Phase 3 — Implementation (ทำงานจริง)
+## Phase 3 — Implementation (ทำงานจริง — ห้ามหยุดกลางทาง)
 
 5. อ่าน feedback จาก REVIEW.md (ถ้ามี) หรือ directorNote
-6. Implement code changes — ทำจนครบ scope ของ sprint
-7. ⚠️ **ห้ามแจ้ง user กลางทาง** ถ้ายังไม่ผ่าน Phase 4 — ทำต่อจนจบ
+6. วางแผนสิ่งที่ต้องทำทั้งหมด — ถ้ามีหลาย tasks ให้ทำ **ครบทุกข้อ**
+7. Implement code changes — ทำจนครบ scope ของ sprint
+
+> ⚠️ **ห้ามแจ้ง user กลางทาง — ทำต่อจนผ่าน Phase 4**
+> ⚠️ **ห้ามทำแค่บางส่วน** — ถ้า sprint มี 3 tasks ก็ต้องทำ 3 tasks
 
 ## Phase 4 — Verification Gates (ต้องผ่านทุกข้อ ก่อนไป Phase 5)
+
+> ⛔ ทุก Gate ต้องผ่าน — ถ้า fail ห้ามไป Gate ถัดไป ต้องแก้ก่อน
 
 8. **Build Gate:**
 ```
 cd /mnt/DiskHik/CODE/meesai && npm run build 2>&1 | tail -20
 ```
-⛔ ถ้า build fail → แก้ error → build ใหม่ → ห้ามไป Phase 5
+⛔ ถ้า build fail → แก้ error → build ใหม่ → วน loop จนผ่าน
 
 9. **Deploy Gate:**
 ```
@@ -59,29 +65,26 @@ cd /mnt/DiskHik/CODE/meesai && docker compose up -d --build app 2>&1 | tail -5
 cd /mnt/DiskHik/CODE/meesai && kill -9 $(ps aux | grep 'git' | grep -v grep | awk '{print $2}') 2>/dev/null; sleep 1; rm -f .git/index.lock 2>/dev/null; git add -A && git commit -m "feat: Sprint X.Y - [summary]"
 ```
 
-## Phase 5 — Handoff (3 steps ต่อเนื่อง → แล้วจึงแจ้ง user)
+## Phase 5 — Handoff (3 steps ต่อเนื่อง → ห้ามหยุด)
 
-> ⚠️ 3 steps นี้ทำต่อเนื่องทันที ห้ามแจ้ง user ก่อนจบ step 13
+> ⚠️ ทำ 3 steps ต่อเนื่องทันที ห้ามแจ้ง user ก่อนจบ step 5c
 
-11. **เขียน** `.agent/handoff/DONE.md` ตาม format ใน protocol
-    - ต้องมี **Verification Checklist** ที่ checked ทุกข้อ:
-      - [x] `npm run build` ผ่าน
-      - [x] `docker compose up` สำเร็จ
-      - [x] `git commit` สำเร็จ
+5a. **เขียน** `.agent/handoff/DONE.md` ตาม format ด้านล่าง
+    - ต้องมี **Verification Checklist** ที่ checked ทุกข้อ
 
-12. **ลบ** `.agent/handoff/REVIEW.md` (ถ้ามี)
+5b. **ลบ** `.agent/handoff/REVIEW.md` (ถ้ามี)
 
-13. **อัพเดท** `.agent/status.json`:
+5c. **อัพเดท** `.agent/status.json`:
     - `turn` → `"reviewer"`
     - `cycle` → +1
     - `lastUpdate` → เวลาปัจจุบัน (ISO format)
     - `lastVerdict` → `"PENDING"`
 
-## Phase 6 — Notify User (จุดเดียวที่แจ้ง user)
+## Phase 6 — Notify User (จุดเดียวที่แจ้ง user ได้)
 
-14. แจ้ง user ว่าทำเสร็จ พร้อมสรุป:
+11. แจ้ง user ว่าทำเสร็จ พร้อมสรุป:
     - ✅ Build / Deploy / Git status
-    - สิ่งที่ทำ (สั้นๆ)
+    - สิ่งที่ทำ (สั้นๆ — table format)
     - บอกให้ไป `/reviewer-loop` ใน Tab Reviewer
 
 ---
@@ -92,13 +95,40 @@ cd /mnt/DiskHik/CODE/meesai && kill -9 $(ps aux | grep 'git' | grep -v grep | aw
 2. **ห้ามหยุดระหว่าง Phase 3-5** — ถ้า build fail ก็แก้แล้ว build ใหม่
 3. **ห้ามข้าม Gate** — Build fail = ห้ามไป Deploy, Deploy fail = ห้ามไป Git
 4. **Phase 5 ต้องทำ 3 steps ต่อเนื่อง** — DONE.md → rm REVIEW.md → update status.json
-5. **ถ้า cycle > 3** → แจ้ง user ว่า sprint ติด loop
+5. **ห้ามทำแค่บาง task** — sprint มีกี่ task ก็ต้องทำครบ
 6. **ห้ามถาม user ว่า "ทำต่อไหม"** — ทำจนจบ Phase 6 เสมอ
+7. **ถ้า cycle > 3** → แจ้ง user ว่า sprint ติด loop
 
-## DONE.md Checklist (ต้องมีครบ)
-- สรุปสิ่งที่ทำ (แบ่ง section ชัดเจน)
-- ไฟล์ที่เปลี่ยน (table + [NEW]/[MODIFY]/[DELETE])
-- Verification Checklist (build/deploy/git — checked)
-- ขอให้ Review (checklist 3 หมวก)
-- Test Credentials (table)
-- Live URL
+## DONE.md Template (ต้องมีครบทุกข้อ)
+
+```markdown
+# ✅ DONE — Sprint X.Y: [Feature Name]
+
+> Coder Agent · [datetime] · Cycle [N]
+
+## สรุปสิ่งที่ทำ
+[แบ่ง section ชัดเจน ถ้ามีหลาย feature]
+
+## ไฟล์ที่เปลี่ยน
+| File | Change |
+|:---|:---|
+| `path` | [NEW] / [MODIFY] / [DELETE] description |
+
+## Verification Checklist
+- [x] `npm run build` ผ่าน (X routes, 0 errors)
+- [x] `docker compose up` สำเร็จ
+- [x] `git commit` สำเร็จ
+
+## ขอให้ Review
+- [ ] 🎩 Business: [คำถาม]
+- [ ] 🧢 UX: [คำถาม]
+- [ ] 👒 Owner: [คำถาม]
+
+## Test Credentials
+| Role | Phone | Password |
+|:---|:---|:---|
+| Admin | 02099990001 | meesai123 |
+
+## Live URL
+https://meesai.vgroup.work
+```
