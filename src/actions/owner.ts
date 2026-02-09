@@ -41,13 +41,13 @@ export async function getOwnerRevenueSummary() {
     const session = await auth()
     if (!session?.user?.id) return null
 
-    // Wallet balance (computed)
-    const balance = await getWalletBalance(session.user.id)
-
     // Total earnings = SUM of RENTAL_PAYMENT transactions to owner's wallet
     const wallet = await prisma.wallet.findUnique({
         where: { userId: session.user.id },
     })
+
+    // Wallet balance (computed from walletId, not userId)
+    const balance = wallet ? await getWalletBalance(wallet.id) : 0
 
     let totalEarnings = 0
     let totalBookings = 0
@@ -164,17 +164,17 @@ export async function requestPayoutAction(amount: number): Promise<{
         return { success: false, error: 'ຈຳນວນເງິນບໍ່ຖືກຕ້ອງ' }
     }
 
-    // Check balance
-    const balance = await getWalletBalance(session.user.id)
-    if (amount > balance) {
-        return { success: false, error: 'ຍອดເງິນບໍ່ພຽງພໍ' }
-    }
-
+    // Get wallet first, then check balance
     const wallet = await prisma.wallet.findUnique({
         where: { userId: session.user.id },
     })
     if (!wallet) {
         return { success: false, error: 'ບໍ່ພົບ Wallet' }
+    }
+
+    const balance = await getWalletBalance(wallet.id)
+    if (amount > balance) {
+        return { success: false, error: 'ຍອດເງິນບໍ່ພຽງພໍ' }
     }
 
     try {
