@@ -7,8 +7,14 @@ import TrustSection from '@/components/landing/TrustSection';
 import OwnerZone from '@/components/landing/OwnerZone';
 import Footer from '@/components/landing/Footer';
 import BottomNav from '@/components/landing/BottomNav';
+import { getFeedProducts, getCategories } from '@/actions/products';
 
-export default function LandingPage() {
+export default async function LandingPage() {
+    const [products, categories] = await Promise.all([
+        getFeedProducts(),
+        getCategories(),
+    ]);
+
     return (
         <>
             <StickyHeader />
@@ -16,7 +22,7 @@ export default function LandingPage() {
                 <HeroSection />
                 <BookingEngine />
                 <OccasionNav />
-                <DynamicFeed />
+                <DynamicFeed products={products} categories={categories} />
                 <TrustSection />
                 <OwnerZone />
             </main>
