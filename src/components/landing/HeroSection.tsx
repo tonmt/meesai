@@ -1,10 +1,12 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Sparkles, ChevronDown, Shield, Zap, Award } from 'lucide-react';
+import Link from 'next/link';
 
 export default function HeroSection() {
     const t = useTranslations();
+    const locale = useLocale();
 
     return (
         <section className="relative min-h-screen flex items-center overflow-hidden">
@@ -40,12 +42,12 @@ export default function HeroSection() {
 
                         {/* Dual CTA */}
                         <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-                            <button className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-champagne-gold to-gold-dark text-white font-bold rounded-full text-lg hover:shadow-[0_0_30px_rgba(212,175,55,0.3)] transition-all duration-300 transform hover:scale-105 animate-pulse-gold">
+                            <Link href={`/${locale}/browse`} className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-champagne-gold to-gold-dark text-white font-bold rounded-full text-lg hover:shadow-[0_0_30px_rgba(212,175,55,0.3)] transition-all duration-300 transform hover:scale-105 animate-pulse-gold text-center">
                                 {t('hero.cta_renter')}
-                            </button>
-                            <button className="w-full sm:w-auto px-8 py-4 border-2 border-royal-navy/20 text-royal-navy font-medium rounded-full text-lg hover:border-champagne-gold hover:text-champagne-gold transition-all duration-300">
+                            </Link>
+                            <Link href={`/${locale}/login`} className="w-full sm:w-auto px-8 py-4 border-2 border-royal-navy/20 text-royal-navy font-medium rounded-full text-lg hover:border-champagne-gold hover:text-champagne-gold transition-all duration-300 text-center">
                                 {t('hero.cta_owner')}
-                            </button>
+                            </Link>
                         </div>
 
                         {/* Stats */}

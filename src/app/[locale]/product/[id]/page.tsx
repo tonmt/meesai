@@ -28,16 +28,16 @@ export default async function ProductDetailPage({ params }: Props) {
     )
 
     return (
-        <div className="min-h-screen hero-bg-light gold-dots-pattern">
+        <div className="min-h-screen hero-bg-light gold-dots-pattern pb-24 md:pb-6">
             <div className="max-w-6xl mx-auto px-4 py-6">
                 <span className="text-xs text-gray-400 mb-4 block">
                     {locale === 'lo' ? product.category.nameLo : product.category.nameEn}
                 </span>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
                     {/* Left: Gallery */}
                     <div className="space-y-4">
                         {/* Main Image */}
-                        <div className="aspect-[3/4] bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl overflow-hidden shadow-xl relative group">
+                        <div className="aspect-[4/3] md:aspect-[3/4] bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl overflow-hidden shadow-xl relative group">
                             {product.images.length > 0 ? (
                                 <img
                                     src={product.images[0]}
@@ -173,10 +173,10 @@ export default async function ProductDetailPage({ params }: Props) {
                             <AvailabilityCalendar bookings={allBookings} locale={locale} />
                         </div>
 
-                        {/* Book Button */}
+                        {/* Book Button — Desktop */}
                         <Link
                             href={`/${locale}/booking/${product.id}`}
-                            className={`block w-full py-4 text-center font-bold rounded-xl text-lg shadow-xl transition-all ${availableAssets.length > 0
+                            className={`hidden md:block w-full py-4 text-center font-bold rounded-xl text-lg shadow-xl transition-all ${availableAssets.length > 0
                                 ? 'bg-champagne-gold text-royal-navy hover:bg-champagne-gold/90 shadow-champagne-gold/20'
                                 : 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'
                                 }`}
@@ -184,6 +184,32 @@ export default async function ProductDetailPage({ params }: Props) {
                             {availableAssets.length > 0
                                 ? (locale === 'lo' ? 'ຈອງດຽວນີ້' : 'Book Now')
                                 : (locale === 'lo' ? 'ເຕັມແລ້ວ' : 'Fully Booked')
+                            }
+                        </Link>
+                    </div>
+                </div>
+
+                {/* Sticky Mobile CTA */}
+                <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-white/95 backdrop-blur-lg border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+                    <div className="flex items-center gap-3">
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-royal-navy truncate">
+                                {locale === 'lo' ? product.titleLo : (product.titleEn || product.titleLo)}
+                            </p>
+                            <p className="text-lg font-bold text-danger">
+                                {new Intl.NumberFormat('lo-LA').format(product.rentalPrice)} <span className="text-xs text-navy-600 font-normal">₭</span>
+                            </p>
+                        </div>
+                        <Link
+                            href={`/${locale}/booking/${product.id}`}
+                            className={`px-8 py-3 font-bold rounded-xl text-base flex-shrink-0 transition-all ${availableAssets.length > 0
+                                ? 'bg-champagne-gold text-royal-navy shadow-lg shadow-champagne-gold/20'
+                                : 'bg-gray-200 text-gray-400 pointer-events-none'
+                                }`}
+                        >
+                            {availableAssets.length > 0
+                                ? (locale === 'lo' ? 'ຈອງດຽວນີ້' : 'Book Now')
+                                : (locale === 'lo' ? 'ເຕັມ' : 'Full')
                             }
                         </Link>
                     </div>

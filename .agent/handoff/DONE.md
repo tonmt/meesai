@@ -1,43 +1,46 @@
-# ✅ DONE — Sprint 6.1: Responsive Design Polish
+# ✅ DONE — Sprint 6.2: Browse + Product Detail + Landing CTA
 
-> Coder Agent · 2026-02-09 22:43 · Cycle 1
+> Coder Agent · 2026-02-09 23:05 · Cycle 1
 
 ---
 
 ## สรุปสิ่งที่ทำ
 
-ปฏิบัติตาม **Director's Design Directive** — Desktop: World-class layout + Mobile: optimized thumb-friendly
+ปฏิบัติตาม Director's Design Directive ต่อ — Browse/Product/Landing responsive polish
 
-### Admin Dashboard — Bookings Tab
-- Desktop: ตาราง 8 คอลัมน์ (Product, Code, Renter, Owner, Dates, Rental, Fee, Status) `hidden md:block`
-- Mobile: การ์ด compact `md:hidden`
+### Browse Page — Desktop List View + Mobile Cards
+- **Desktop** (`hidden md:block`): 7-col rich table (Product w/image, Category, Size, Color, Rental price, Status badge, View CTA)
+- **Mobile** (`md:hidden`): 2-col card grid with 3:4 aspect images + badges (เดิมแต่ปรับ gap compact)
 
-### Owner Dashboard — 3 Tabs Upgraded
-- **Overview**: 5-col grid (`lg:grid-cols-5`) — Recent Bookings (3/5) + Wallet Summary (2/5)
-- **Bookings**: Desktop 7-col table + mobile cards
-- **Wallet**: 2-col — Balance+Payout (2/5) left + Transaction History (3/5) right
+### Product Detail — Sticky Mobile CTA + Gallery Polish
+- **Mobile gallery**: `aspect-[4/3]` (สั้นลง เหมาะมือถือ, desktop ยังใช้ `md:aspect-[3/4]`)
+- **Sticky CTA Bar**: Fixed bottom bar บนมือถือ (product name + price + Book Now button) — thumb-friendly
+- **Desktop CTA**: เดิม full-width button (hidden on mobile)
+- **Bottom padding**: `pb-24 md:pb-6` ป้องกัน content ถูก CTA bar บัง
 
-### Staff Panel
-- Container `max-w-4xl` → `max-w-6xl`
-- Check-out/Check-in: `grid-cols-1 md:grid-cols-2` two-column grid
+### Landing — HeroSection + OwnerZone CTA Links
+- **HeroSection**: 2 ปุ่ม CTA เปลี่ยนจาก `<button>` → `<Link>` จริง
+  - "ເບິ່ງຊຸດ" → `/{locale}/browse`
+  - "ເຈົ້າຂອງຊຸດ" → `/{locale}/login`
+- **OwnerZone**: CTA เปลี่ยนจาก `<button>` → `<Link>` ไป `/{locale}/login`
 
 ## ไฟล์ที่เปลี่ยน
 
 | File | Change |
 |:---|:---|
-| `src/components/admin/AdminDashboard.tsx` | [MODIFY] Bookings: desktop table + mobile cards |
-| `src/components/owner/OwnerDashboard.tsx` | [MODIFY] Overview 2-col, Bookings table, Wallet 2-col |
-| `src/components/staff/StaffPanel.tsx` | [MODIFY] 2-col grid for check-in/out |
-| `src/app/[locale]/staff/page.tsx` | [MODIFY] max-w-4xl → max-w-6xl |
+| `src/app/[locale]/browse/page.tsx` | [MODIFY] Desktop table + mobile cards |
+| `src/app/[locale]/product/[id]/page.tsx` | [MODIFY] Mobile sticky CTA + gallery aspect |
+| `src/components/landing/HeroSection.tsx` | [MODIFY] CTA → Link + useLocale |
+| `src/components/landing/OwnerZone.tsx` | [MODIFY] CTA → Link |
 
 ## ขอให้ Review
 
-- [ ] 🎩 Business: Desktop layout แสดง data ครบถ้วนไหม? ใช้ screen space คุ้มค่าไหม?
-- [ ] 🧢 UX: Mobile cards อ่านง่ายไหม? thumb-zone OK?
-- [ ] 👒 Owner: Owner dashboard 2-col layout ดูข้อมูลสะดวกไหม?
+- [ ] 🎩 Business: Browse table ช่วย compare สินค้าได้ดีขึ้นไหม? Desktop ใช้ screen space คุ้มค่าไหม?
+- [ ] 🧢 UX: Mobile sticky CTA ใช้งานง่ายไหม? Gallery ratio เหมาะกับมือถือไหม?
+- [ ] 👒 Owner: Landing CTA links ทำงานจริงไหม? OwnerZone ชวนสมัครได้ดีไหม?
 
 ## Build & Deploy
-- ✅ `npm run build` — 12 routes, 0 errors  
+- ✅ `npm run build` — 12 routes, 0 errors
 - ✅ `docker compose up -d --build app` — deployed
 
 ## Test Credentials

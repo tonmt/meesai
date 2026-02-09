@@ -2,6 +2,7 @@
 
 import { useTranslations, useLocale } from 'next-intl';
 import { TrendingUp, Shield, BarChart3 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function OwnerZone() {
     const t = useTranslations();
@@ -40,9 +41,9 @@ export default function OwnerZone() {
                         </div>
 
                         <div className="block">
-                            <button className="px-10 py-4 bg-gradient-to-r from-champagne-gold to-gold-dark text-white font-bold rounded-full text-lg hover:shadow-[0_0_40px_rgba(212,175,55,0.3)] transition-all duration-300 transform hover:scale-105 gold-shimmer">
+                            <Link href={`/${locale}/login`} className="inline-block px-10 py-4 bg-gradient-to-r from-champagne-gold to-gold-dark text-white font-bold rounded-full text-lg hover:shadow-[0_0_40px_rgba(212,175,55,0.3)] transition-all duration-300 transform hover:scale-105 gold-shimmer text-center">
                                 {t('owner.cta')}
-                            </button>
+                            </Link>
                         </div>
                     </div>
 
