@@ -2,8 +2,9 @@
 
 import { useTranslations, useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { Search, Heart, ShoppingBag, User, Globe, Menu, X } from 'lucide-react';
+import { Search, Heart, ShoppingBag, User, Globe, Menu, X, LogOut } from 'lucide-react';
 import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 
 const NAV_LINKS = [
     { key: 'home', href: '/' },
@@ -17,6 +18,9 @@ export default function StickyHeader() {
     const locale = useLocale();
     const otherLocale = locale === 'lo' ? 'en' : 'lo';
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const { data: session } = useSession();
+
+    const user = session?.user;
 
     return (
         <>
@@ -68,10 +72,34 @@ export default function StickyHeader() {
                             <ShoppingBag className="w-5 h-5" />
                             <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-champagne-gold text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
                         </button>
-                        <button className="hidden lg:flex items-center gap-2 px-4 py-2 bg-royal-navy text-white rounded-full text-sm hover:bg-navy-800 transition-all shadow-sm">
-                            <User className="w-4 h-4" />
-                            <span>{t('nav.login')}</span>
-                        </button>
+
+                        {/* Auth Button (Desktop) */}
+                        {user ? (
+                            <div className="hidden lg:flex items-center gap-2">
+                                <div className="flex items-center gap-2 px-3 py-2 bg-champagne-gold/10 rounded-full border border-champagne-gold/20">
+                                    <div className="w-7 h-7 bg-champagne-gold text-white rounded-full flex items-center justify-center text-xs font-bold">
+                                        {user.name?.charAt(0).toUpperCase()}
+                                    </div>
+                                    <span className="text-sm font-medium text-royal-navy max-w-[100px] truncate">{user.name}</span>
+                                </div>
+                                <button
+                                    onClick={() => signOut({ callbackUrl: `/${locale}` })}
+                                    className="p-2 text-navy-600 hover:text-danger transition-colors"
+                                    title={locale === 'lo' ? 'ອອກຈາກລະບົບ' : 'Sign Out'}
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                </button>
+                            </div>
+                        ) : (
+                            <Link
+                                href="/login"
+                                className="hidden lg:flex items-center gap-2 px-4 py-2 bg-royal-navy text-white rounded-full text-sm hover:bg-navy-800 transition-all shadow-sm"
+                            >
+                                <User className="w-4 h-4" />
+                                <span>{t('nav.login')}</span>
+                            </Link>
+                        )}
+
                         {/* Mobile Hamburger */}
                         <button
                             className="lg:hidden p-2 text-navy-600 hover:text-champagne-gold transition-colors"
@@ -107,6 +135,22 @@ export default function StickyHeader() {
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
+
+                            {/* User Info (Mobile) */}
+                            {user && (
+                                <div className="mb-6 p-4 bg-champagne-gold/5 rounded-2xl border border-champagne-gold/10">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-champagne-gold text-white rounded-full flex items-center justify-center font-bold">
+                                            {user.name?.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold text-royal-navy text-sm">{user.name}</p>
+                                            <p className="text-xs text-navy-600">{user.phone}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             <nav className="flex flex-col gap-1 mb-8">
                                 {NAV_LINKS.map(({ key, href }) => (
                                     <Link
@@ -119,10 +163,26 @@ export default function StickyHeader() {
                                     </Link>
                                 ))}
                             </nav>
-                            <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-royal-navy text-white rounded-xl hover:bg-navy-800 transition-all">
-                                <User className="w-4 h-4" />
-                                <span>{t('nav.login')}</span>
-                            </button>
+
+                            {user ? (
+                                <button
+                                    onClick={() => signOut({ callbackUrl: `/${locale}` })}
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 border border-red-200 rounded-xl hover:bg-red-100 transition-all"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    <span>{locale === 'lo' ? 'ອອກຈາກລະບົບ' : 'Sign Out'}</span>
+                                </button>
+                            ) : (
+                                <Link
+                                    href="/login"
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-royal-navy text-white rounded-xl hover:bg-navy-800 transition-all"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <User className="w-4 h-4" />
+                                    <span>{t('nav.login')}</span>
+                                </Link>
+                            )}
+
                             <Link
                                 href="/"
                                 locale={otherLocale}

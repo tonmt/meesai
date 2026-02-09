@@ -1,6 +1,8 @@
 import { PrismaClient, AssetGrade, AssetStatus } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
+const DEFAULT_PASSWORD = bcrypt.hashSync('meesai123', 12)
 
 async function main() {
     console.log('🌱 Seeding MeeSai database...')
@@ -22,54 +24,54 @@ async function main() {
 
     // ─── Users ───
     const admin = await prisma.user.upsert({
-        where: { phone: '020-9999-0001' },
+        where: { phone: '02099990001' },
         update: {},
-        create: { name: 'Admin MeeSai', phone: '020-9999-0001', email: 'admin@meesai.la', role: 'ADMIN' },
+        create: { name: 'Admin MeeSai', phone: '02099990001', email: 'admin@meesai.la', password: DEFAULT_PASSWORD, role: 'ADMIN' },
     })
     const staff = await prisma.user.upsert({
-        where: { phone: '020-9999-0002' },
+        where: { phone: '02099990002' },
         update: {},
-        create: { name: 'Staff Noy', phone: '020-9999-0002', role: 'STAFF' },
+        create: { name: 'Staff Noy', phone: '02099990002', password: DEFAULT_PASSWORD, role: 'STAFF' },
     })
     const owner1 = await prisma.user.upsert({
-        where: { phone: '020-5555-1001' },
+        where: { phone: '02055551001' },
         update: {},
-        create: { name: 'ນາງ ສົມພອນ', phone: '020-5555-1001', email: 'somphone@gmail.com', role: 'OWNER' },
+        create: { name: 'ນາງ ສົມພອນ', phone: '02055551001', email: 'somphone@gmail.com', password: DEFAULT_PASSWORD, role: 'OWNER' },
     })
     const owner2 = await prisma.user.upsert({
-        where: { phone: '020-5555-1002' },
+        where: { phone: '02055551002' },
         update: {},
-        create: { name: 'ນາງ ວິໄລ', phone: '020-5555-1002', role: 'OWNER' },
+        create: { name: 'ນາງ ວິໄລ', phone: '02055551002', password: DEFAULT_PASSWORD, role: 'OWNER' },
     })
     const owner3 = await prisma.user.upsert({
-        where: { phone: '020-5555-1003' },
+        where: { phone: '02055551003' },
         update: {},
-        create: { name: 'ທ. ພູວົງ', phone: '020-5555-1003', role: 'OWNER' },
+        create: { name: 'ທ. ພູວົງ', phone: '02055551003', password: DEFAULT_PASSWORD, role: 'OWNER' },
     })
     const renter1 = await prisma.user.upsert({
-        where: { phone: '020-7777-2001' },
+        where: { phone: '02077772001' },
         update: {},
-        create: { name: 'ນາງ ແກ້ວ', phone: '020-7777-2001', role: 'RENTER' },
+        create: { name: 'ນາງ ແກ້ວ', phone: '02077772001', password: DEFAULT_PASSWORD, role: 'RENTER' },
     })
     const renter2 = await prisma.user.upsert({
-        where: { phone: '020-7777-2002' },
+        where: { phone: '02077772002' },
         update: {},
-        create: { name: 'ນາງ ດາວ', phone: '020-7777-2002', role: 'RENTER' },
+        create: { name: 'ນາງ ດາວ', phone: '02077772002', password: DEFAULT_PASSWORD, role: 'RENTER' },
     })
     const renter3 = await prisma.user.upsert({
-        where: { phone: '020-7777-2003' },
+        where: { phone: '02077772003' },
         update: {},
-        create: { name: 'ທ. ສົມຈິດ', phone: '020-7777-2003', role: 'RENTER' },
+        create: { name: 'ທ. ສົມຈິດ', phone: '02077772003', password: DEFAULT_PASSWORD, role: 'RENTER' },
     })
     const renter4 = await prisma.user.upsert({
-        where: { phone: '020-7777-2004' },
+        where: { phone: '02077772004' },
         update: {},
-        create: { name: 'ນາງ ນ້ອຍ', phone: '020-7777-2004', role: 'RENTER' },
+        create: { name: 'ນາງ ນ້ອຍ', phone: '02077772004', password: DEFAULT_PASSWORD, role: 'RENTER' },
     })
     const renter5 = await prisma.user.upsert({
-        where: { phone: '020-7777-2005' },
+        where: { phone: '02077772005' },
         update: {},
-        create: { name: 'ນາງ ຈັນ', phone: '020-7777-2005', role: 'RENTER' },
+        create: { name: 'ນາງ ຈັນ', phone: '02077772005', password: DEFAULT_PASSWORD, role: 'RENTER' },
     })
     console.log('  ✅ Users: 1 Admin, 1 Staff, 3 Owners, 5 Renters')
 

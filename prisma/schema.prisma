@@ -80,6 +80,7 @@ model User {
   name      String
   phone     String   @unique
   email     String?
+  password  String?  // bcrypt hash (nullable สำหรับ social login ในอนาคต)
   role      UserRole @default(RENTER)
   avatar    String?
   idCardUrl String?  @map("id_card_url") // KYC สำหรับ Owner/Staff
