@@ -38,33 +38,46 @@
 
 ## 2. Database Schema
 
-### Models (6 total)
+> 📐 ออกแบบตาม [5 เสาเข็กเทคนิค](BUSINESS_ARCHITECTURE.md) — ดูรายละเอียดเพิ่มเติมในเอกสาร Business Architecture
 
-| Model | Table | Purpose |
-|:---|:---|:---|
-| **User** | `users` | ผู้ใช้ทั้ง Renter, Owner, Admin |
-| **Category** | `categories` | ประเภทชุด (Wedding, Traditional, Gala...) |
-| **Item** | `items` | ชุดเช่า — Unique Asset Identity (barcode) |
-| **Booking** | `bookings` | การจอง — Buffer Time algorithm |
-| **Wallet** | `wallets` | กระเป๋าเงินเจ้าของชุด |
-| **Payout** | `payouts` | การถอนเงินจาก Wallet |
+### Models (12 total)
+
+| Model | Table | Pillar | Purpose |
+|:---|:---|:---:|:---|
+| **User** | `users` | — | ผู้ใช้ (Renter, Owner, Admin, Staff) |
+| **Product** | `products` | #3 | ข้อมูลทั่วไป (SKU) สำหรับแสดงหน้าเว็บ |
+| **ItemAsset** | `item_assets` | #3 | ตัวชุดจริงในคลัง (UUID + Barcode + FSM) |
+| **Category** | `categories` | — | ประเภทชุด (Wedding, Traditional, Gala...) |
+| **Booking** | `bookings` | #1 | การจอง + Buffer Time + availability index |
+| **Wallet** | `wallets` | #4 | กระเป๋าเงิน (ไม่มี balance field) |
+| **Transaction** | `transactions` | #4 | Append-only ledger (บัญชีคู่) |
+| **Payout** | `payouts` | #4 | การถอนเงินจาก Wallet |
+| **EvidenceLog** | `evidence_logs` | #5 | รูปหลักฐาน Check-out/Check-in (Immutable) |
+| **StatusTransition** | `status_transitions` | #2 | Log ทุกการเปลี่ยนสถานะ FSM |
+| **MaintenanceLog** | `maintenance_logs` | #2 | ประวัติการซ่อมบำรุง |
+| **SystemConfig** | `system_configs` | — | ค่า config ปรับได้ (Buffer Days, Fee %) |
 
 ### Relationships
 
 ```
-User (OWNER) ──1:N──► Item ───N:1──► Category
-User (RENTER) ──1:N──► Booking ──N:1──► Item
-User ──1:1──► Wallet ──1:N──► Payout
+User (OWNER) ──1:N──► ItemAsset ──N:1──► Product ──N:1──► Category
+User (RENTER) ──1:N──► Booking ──N:1──► ItemAsset
+User ──1:1──► Wallet ──1:N──► Transaction (Double-Entry)
+Booking ──1:N──► EvidenceLog (Photos)
+ItemAsset ──1:N──► StatusTransition (FSM Audit)
 ```
 
-### Key Enums
+### Key Enums (8 total)
 
 | Enum | Values |
 |:---|:---|
-| `UserRole` | RENTER, OWNER, ADMIN |
-| `ItemStatus` | AVAILABLE, RENTED, MAINTENANCE, RETIRED |
-| `BookingStatus` | PENDING, CONFIRMED, PICKED_UP, RETURNED, COMPLETED, CANCELLED |
-| `PayoutStatus` | PENDING, PROCESSING, COMPLETED |
+| `UserRole` | RENTER, OWNER, ADMIN, STAFF |
+| `AssetStatus` | AVAILABLE, RESERVED, PICKED_UP, RETURNED, IN_QC, CLEANING, DAMAGED, MAINTENANCE, RETIRED |
+| `BookingStatus` | PENDING, CONFIRMED, PICKED_UP, RETURNED, COMPLETED, CANCELLED, DISPUTED |
+| `TransactionType` | RENTAL_PAYMENT, SERVICE_FEE, DEPOSIT, DEPOSIT_REFUND, OWNER_EARNING, DAMAGE_DEDUCT, PAYOUT |
+| `EvidenceType` | CHECK_OUT, CHECK_IN, DAMAGE_REPORT, ONBOARDING |
+| `AssetGrade` | A, B, C |
+| `PayoutStatus` | PENDING, PROCESSING, COMPLETED, FAILED |
 
 ### Buffer Time Algorithm
 
@@ -72,10 +85,11 @@ User ──1:1──► Wallet ──1:N──► Payout
 eventDate     → วันงาน
 pickupDate    → วันรับชุด (eventDate - 1~2 days)
 returnDate    → วันคืนชุด (eventDate + 1 day)
-bufferEnd     → วันที่ชุดพร้อมให้เช่าใหม่ (returnDate + 3 days สำหรับซักรีด/ตรวจสภาพ)
+bufferEnd     → วันที่ชุดพร้อมให้เช่าใหม่ (returnDate + BUFFER_DAYS จาก SystemConfig)
 ```
 
 ชุดจะถูก block ตั้งแต่ `pickupDate` ถึง `bufferEnd` — ป้องกันการจองซ้อน
+Index: `@@index([assetId, pickupDate, bufferEnd])` สำหรับ fast availability query
 
 ---
 
