@@ -8,6 +8,8 @@ type BrowseFilters = {
     minPrice?: number
     maxPrice?: number
     search?: string
+    sort?: 'newest' | 'price_asc' | 'price_desc'
+    availableOnly?: boolean
 }
 
 /**
@@ -38,6 +40,16 @@ export async function browseProducts(
         if (filters.maxPrice) (where.rentalPrice as Record<string, number>).lte = filters.maxPrice
     }
 
+    // Available only filter: only products that have at least 1 available asset
+    if (filters?.availableOnly) {
+        where.assets = { some: { status: 'AVAILABLE' } }
+    }
+
+    // Sort
+    let orderBy: Record<string, string> = { createdAt: 'desc' }
+    if (filters?.sort === 'price_asc') orderBy = { rentalPrice: 'asc' }
+    else if (filters?.sort === 'price_desc') orderBy = { rentalPrice: 'desc' }
+
     const [products, total] = await Promise.all([
         prisma.product.findMany({
             where,
@@ -45,7 +57,7 @@ export async function browseProducts(
                 category: { select: { nameLo: true, nameEn: true } },
                 _count: { select: { assets: { where: { status: 'AVAILABLE' } } } },
             },
-            orderBy: { createdAt: 'desc' },
+            orderBy,
             skip: (page - 1) * limit,
             take: limit,
         }),

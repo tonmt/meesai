@@ -13,6 +13,8 @@ type Props = {
         search?: string
         minPrice?: string
         maxPrice?: string
+        sort?: string
+        available?: string
     }>
 }
 
@@ -22,12 +24,16 @@ export default async function BrowsePage({ params, searchParams }: Props) {
     const t = await getTranslations('browse')
 
     const page = parseInt(sp.page || '1', 10)
+    const sortValue = (sp.sort || 'newest') as 'newest' | 'price_asc' | 'price_desc'
+    const availableOnly = sp.available === '1'
     const filters = {
         categoryId: sp.category || undefined,
         size: sp.size || undefined,
         search: sp.search || undefined,
         minPrice: sp.minPrice ? parseInt(sp.minPrice, 10) : undefined,
         maxPrice: sp.maxPrice ? parseInt(sp.maxPrice, 10) : undefined,
+        sort: sortValue,
+        availableOnly,
     }
 
     const [result, categories, sizes] = await Promise.all([
