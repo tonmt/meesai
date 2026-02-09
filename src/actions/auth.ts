@@ -28,6 +28,7 @@ const LoginSchema = z.object({
 type AuthResult = {
     success: boolean
     error?: string
+    role?: string
 }
 
 export async function registerUser(formData: FormData): Promise<AuthResult> {
@@ -106,7 +107,13 @@ export async function loginUser(formData: FormData): Promise<AuthResult> {
             redirect: false,
         })
 
-        return { success: true }
+        // Fetch role for client-side redirect
+        const user = await prisma.user.findUnique({
+            where: { phone },
+            select: { role: true },
+        })
+
+        return { success: true, role: user?.role || 'RENTER' }
     } catch (error) {
         console.error('Login error:', error)
         return { success: false, error: 'ເບີໂທ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ' }

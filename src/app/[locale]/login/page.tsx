@@ -36,7 +36,12 @@ export default function LoginPage() {
             } else {
                 const result = await loginUser(formData);
                 if (result.success) {
-                    router.push(`/${locale}`);
+                    // Role-based redirect
+                    const dest = result.role === 'ADMIN' ? `/${locale}/admin`
+                        : result.role === 'OWNER' ? `/${locale}/owner`
+                            : result.role === 'STAFF' ? `/${locale}/staff`
+                                : `/${locale}`;
+                    router.push(dest);
                     router.refresh();
                 } else {
                     setError(result.error || 'Error');
