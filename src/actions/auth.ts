@@ -114,8 +114,16 @@ export async function loginUser(formData: FormData): Promise<AuthResult> {
         })
 
         return { success: true, role: user?.role || 'RENTER' }
-    } catch (error) {
+    } catch (error: unknown) {
+        // NextAuth v5 throws NEXT_REDIRECT — must re-throw it
+        if (error instanceof Error && (error.message === 'NEXT_REDIRECT' || (error as { digest?: string }).digest?.startsWith('NEXT_REDIRECT'))) {
+            throw error
+        }
+        // CredentialsSignin error means wrong phone/password
+        if (error instanceof Error && error.message?.includes('CredentialsSignin')) {
+            return { success: false, error: 'ເບີໂທ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ' }
+        }
         console.error('Login error:', error)
-        return { success: false, error: 'ເບີໂທ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ' }
+        return { success: false, error: 'ເກີດຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່' }
     }
 }
