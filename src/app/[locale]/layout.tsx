@@ -3,6 +3,8 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import SessionProvider from '@/components/SessionProvider';
+import Navbar from '@/components/layout/Navbar';
+import BottomNav from '@/components/layout/BottomNav';
 
 export default async function LocaleLayout({
     children,
@@ -18,10 +20,12 @@ export default async function LocaleLayout({
 
     return (
         <html lang={locale}>
-            <body className="antialiased">
+            <body className="antialiased pb-16 md:pb-0">
                 <SessionProvider>
                     <NextIntlClientProvider messages={messages}>
-                        {children}
+                        <Navbar />
+                        <main>{children}</main>
+                        <BottomNav />
                     </NextIntlClientProvider>
                 </SessionProvider>
             </body>
