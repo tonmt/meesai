@@ -1,6 +1,8 @@
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { getAdminStats, getAdminUsers, getAdminBookings, getAdminTransactions } from '@/actions/admin'
+import { getAdminProducts } from '@/actions/product-crud'
+import { getCategories } from '@/actions/browse'
 import AdminDashboard from '@/components/admin/AdminDashboard'
 import { getTranslations } from 'next-intl/server'
 
@@ -20,11 +22,13 @@ export default async function AdminPage({ params }: Props) {
         redirect(`/${locale}`)
     }
 
-    const [stats, users, bookingsData, txnData] = await Promise.all([
+    const [stats, users, bookingsData, txnData, productsData, categories] = await Promise.all([
         getAdminStats(),
         getAdminUsers(),
         getAdminBookings(),
         getAdminTransactions(),
+        getAdminProducts(),
+        getCategories(),
     ])
 
     return (
@@ -38,6 +42,9 @@ export default async function AdminPage({ params }: Props) {
                     users={users}
                     bookings={bookingsData.bookings}
                     transactions={txnData.transactions}
+                    products={productsData.products}
+                    productTotal={productsData.total}
+                    categories={categories}
                     locale={locale}
                 />
             </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { BarChart3, Users, Package, CreditCard, Clock, CheckCircle, TrendingUp, ShoppingBag } from 'lucide-react'
+import ProductManager from '@/components/admin/ProductManager'
 
 type Stats = {
     totalUsers: number
@@ -53,11 +54,37 @@ type AdminTxn = {
     destWallet: { user: { name: string } } | null
 }
 
+type AdminProduct = {
+    id: string
+    titleLo: string
+    titleEn: string | null
+    description: string | null
+    images: string[]
+    rentalPrice: number
+    buyPrice: number | null
+    size: string
+    color: string | null
+    brand: string | null
+    createdAt: Date
+    category: { id: string; nameLo: string; nameEn: string }
+    _count: { assets: number }
+}
+
+type AdminCategory = {
+    id: string
+    nameLo: string
+    nameEn: string
+    _count: { products: number }
+}
+
 type Props = {
     stats: Stats
     users: User[]
     bookings: AdminBooking[]
     transactions: AdminTxn[]
+    products: AdminProduct[]
+    productTotal: number
+    categories: AdminCategory[]
     locale: string
 }
 
@@ -85,12 +112,13 @@ const txnColors: Record<string, string> = {
     PAYOUT: 'text-red-500',
 }
 
-export default function AdminDashboard({ stats, users, bookings, transactions, locale }: Props) {
-    const [activeTab, setActiveTab] = useState<'stats' | 'users' | 'bookings' | 'revenue'>('stats')
+export default function AdminDashboard({ stats, users, bookings, transactions, products, productTotal, categories, locale }: Props) {
+    const [activeTab, setActiveTab] = useState<'stats' | 'users' | 'bookings' | 'revenue' | 'products'>('stats')
     const fmt = (n: number) => new Intl.NumberFormat('lo-LA').format(n)
 
     const tabs = [
         { key: 'stats' as const, label: locale === 'lo' ? 'ພາບລວມ' : 'Overview', icon: BarChart3 },
+        { key: 'products' as const, label: locale === 'lo' ? 'ສິນຄ້າ' : 'Products', icon: Package },
         { key: 'users' as const, label: locale === 'lo' ? 'ຜູ້ໃຊ້' : 'Users', icon: Users },
         { key: 'bookings' as const, label: locale === 'lo' ? 'ການຈອງ' : 'Bookings', icon: ShoppingBag },
         { key: 'revenue' as const, label: locale === 'lo' ? 'ລາຍໄດ້' : 'Revenue', icon: CreditCard },
@@ -324,6 +352,16 @@ export default function AdminDashboard({ stats, users, bookings, transactions, l
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* === PRODUCTS TAB === */}
+            {activeTab === 'products' && (
+                <ProductManager
+                    products={products}
+                    categories={categories}
+                    total={productTotal}
+                    locale={locale}
+                />
             )}
         </div>
     )
