@@ -280,6 +280,7 @@ model Shop {
   logo        String? // MinIO URL
   phone       String?
   address     String?
+  district    String?   // โซนพื้นที่ เช่น "ສີຫອມ", "ຈັນທະບູລີ" (สำหรับ Location Masking)
   isVerified  Boolean @default(false) @map("is_verified")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")

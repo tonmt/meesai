@@ -489,6 +489,12 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
                                                 <Shield className="w-3 h-3" /> ຢືນຢັນແລ້ວ
                                             </span>
                                         )}
+                                        {/* Location Masking: โชว์โซนเท่านั้น */}
+                                        {garment.shop.district && (
+                                            <span className="flex items-center gap-0.5 text-surface-400">
+                                                📍 ໂຊນ{garment.shop.district}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -498,6 +504,27 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
                         </div>
                     </section>
                 )}
+
+                {/* ── Iron Wall Trust Badges ── */}
+                <section className="bg-white mt-2 p-4">
+                    <div className="grid grid-cols-3 gap-2">
+                        <div className="flex flex-col items-center gap-1 p-2.5 bg-accent-50 rounded-xl">
+                            <span className="text-lg">🛡️</span>
+                            <p className="text-[9px] font-bold text-accent-700 text-center">ປະກັນ MeeSai</p>
+                            <p className="text-[8px] text-accent-500">Minor Damage</p>
+                        </div>
+                        <div className="flex flex-col items-center gap-1 p-2.5 bg-blue-50 rounded-xl">
+                            <span className="text-lg">🔒</span>
+                            <p className="text-[9px] font-bold text-blue-700 text-center">Hold ວົງເງິນ</p>
+                            <p className="text-[8px] text-blue-500">ບໍ່ຕັດເງິນຈິງ</p>
+                        </div>
+                        <div className="flex flex-col items-center gap-1 p-2.5 bg-green-50 rounded-xl">
+                            <span className="text-lg">🚚</span>
+                            <p className="text-[9px] font-bold text-green-700 text-center">ສົ່ງຟຣີ</p>
+                            <p className="text-[8px] text-green-500">Hub → ເຮືອນ</p>
+                        </div>
+                    </div>
+                </section>
 
                 {/* ── Reviews ── */}
                 <section className="bg-white mt-2 p-4">
