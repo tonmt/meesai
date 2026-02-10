@@ -535,20 +535,29 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
                     )}
                 </section>
 
-                {/* ── Trust Bar ── */}
-                <section className="bg-white mt-2 p-4">
-                    <div className="grid grid-cols-3 gap-3">
-                        <div className="text-center">
-                            <Shield className="w-6 h-6 text-accent-500 mx-auto mb-1" />
-                            <p className="text-[10px] font-medium text-surface-500">ຮັບປະກັນ</p>
+                {/* ── MeeSai Service Lock-in ── */}
+                <section className="bg-gradient-to-b from-accent-50 to-white mt-2 p-4">
+                    <p className="text-xs font-bold text-accent-600 mb-3 text-center">🔒 ເຊົ່າຜ່ານ MeeSai ປອດໄພກວ່າ</p>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-white rounded-xl p-3 border border-accent-100 text-center">
+                            <Shield className="w-6 h-6 text-accent-500 mx-auto mb-1.5" />
+                            <p className="text-[11px] font-bold text-primary-900">ບໍ່ໂອນມັດຈຳສົດ</p>
+                            <p className="text-[9px] text-surface-500 mt-0.5">ລະບົບລ໋ອກວົງເງິນ ປອດໄພ 100%</p>
                         </div>
-                        <div className="text-center">
-                            <Truck className="w-6 h-6 text-accent-500 mx-auto mb-1" />
-                            <p className="text-[10px] font-medium text-surface-500">ສ່ງຟຣີ</p>
+                        <div className="bg-white rounded-xl p-3 border border-accent-100 text-center">
+                            <Truck className="w-6 h-6 text-accent-500 mx-auto mb-1.5" />
+                            <p className="text-[11px] font-bold text-primary-900">ສົ່ງຟຣີ ຮັບ-ສົ່ງຖືງທີ່</p>
+                            <p className="text-[9px] text-surface-500 mt-0.5">ບໍ່ຕ້ອງຂັບໄປຮັບເອງ</p>
                         </div>
-                        <div className="text-center">
-                            <Sparkles className="w-6 h-6 text-accent-500 mx-auto mb-1" />
-                            <p className="text-[10px] font-medium text-surface-500">ຊັກແຫ້ງຟຣີ</p>
+                        <div className="bg-white rounded-xl p-3 border border-accent-100 text-center">
+                            <CheckCircle className="w-6 h-6 text-status-success mx-auto mb-1.5" />
+                            <p className="text-[11px] font-bold text-primary-900">ປະກັນ MeeSai</p>
+                            <p className="text-[9px] text-surface-500 mt-0.5">ຄຸ້ມຄອງຄວາມເສຍຫາຍເລັກນ້ອຍ</p>
+                        </div>
+                        <div className="bg-white rounded-xl p-3 border border-accent-100 text-center">
+                            <Sparkles className="w-6 h-6 text-amber-500 mx-auto mb-1.5" />
+                            <p className="text-[11px] font-bold text-primary-900">ຊັກແຫ້ງຟຣີ</p>
+                            <p className="text-[9px] text-surface-500 mt-0.5">ສົ່ງຄືນສະອາດ ບໍ່ຕ້ອງຊັກເອງ</p>
                         </div>
                     </div>
                 </section>

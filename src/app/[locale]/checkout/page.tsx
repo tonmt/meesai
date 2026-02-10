@@ -34,7 +34,7 @@ export default async function CheckoutPage({ searchParams }: Props) {
     const garment = await prisma.garment.findUnique({
         where: { id: params.garment },
         include: {
-            shop: { select: { nameLo: true, isVerified: true } },
+            shop: { select: { isVerified: true } },
             images: { take: 1 },
         },
     });
@@ -81,7 +81,7 @@ export default async function CheckoutPage({ searchParams }: Props) {
                             <p className="text-xs text-surface-500 mt-0.5">{garment.code} | {garment.size} | {garment.color}</p>
                             <div className="flex items-center gap-1 mt-1 text-xs text-surface-500">
                                 <Star className="w-3 h-3 text-amber-400" fill="currentColor" />
-                                5.0 | 🏪 {garment.shop?.nameLo}
+                                5.0 | ✅ Verified Partner
                                 {garment.shop?.isVerified && <Shield className="w-3 h-3 text-status-success ml-1" />}
                             </div>
                             <p className="text-sm font-extrabold text-accent-500 mt-1.5">
@@ -234,7 +234,7 @@ export default async function CheckoutPage({ searchParams }: Props) {
                                 </div>
                                 <div>
                                     <p className="text-xs font-bold text-primary-900">ໂອນເງິນ</p>
-                                    <p className="text-[10px] text-surface-500">ສົ່ງຫຼັກຖານໃນແຊັດ</p>
+                                    <p className="text-[10px] text-surface-500">ສົ່ງຫຼັກຖານໃນ MeeSai</p>
                                 </div>
                             </div>
                         </label>

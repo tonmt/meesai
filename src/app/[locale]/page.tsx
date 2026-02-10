@@ -155,6 +155,27 @@ export default function HomePage() {
             </section>
 
             {/* ══════════════════════════════════════════════
+          2.5 TRUST STRIP — Service Lock-in
+          ══════════════════════════════════════════════ */}
+            <section className="mt-4 px-4">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
+                        {[
+                            { icon: "🔒", text: "ບໍ່ໂອນມັດຈຳສົດ" },
+                            { icon: "🚚", text: "ສົ່ງຟຣີ ຮັບ-ສົ່ງຖືງທີ່" },
+                            { icon: "🛡️", text: "ປະກັນ MeeSai" },
+                            { icon: "✨", text: "ຊັກແຫ້ງຟຣີ" },
+                        ].map((item) => (
+                            <div key={item.text} className="flex items-center gap-1.5 bg-accent-50 border border-accent-100 rounded-full px-3 py-1.5 shrink-0">
+                                <span className="text-sm">{item.icon}</span>
+                                <span className="text-[11px] font-semibold text-accent-700 whitespace-nowrap">{item.text}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* ══════════════════════════════════════════════
           3. ICON MENU (Categories)
           ══════════════════════════════════════════════ */}
             <section className="mt-6 px-4">
