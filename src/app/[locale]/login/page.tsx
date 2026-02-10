@@ -1,224 +1,177 @@
-'use client';
+"use client";
 
-import { useTranslations, useLocale } from 'next-intl';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
-import { Phone, Lock, User, Eye, EyeOff, ArrowLeft, Loader2 } from 'lucide-react';
-import { registerUser } from '@/actions/auth';
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Phone, Lock, Eye, EyeOff, Gem, ArrowRight, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
-    const t = useTranslations('login');
-    const locale = useLocale();
+    const t = useTranslations();
     const router = useRouter();
-    const [mode, setMode] = useState<'login' | 'register'>('login');
+    const [phone, setPhone] = useState("");
+    const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
-    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+        setError("");
         setLoading(true);
-        setError('');
-        setSuccess('');
-
-        const formData = new FormData(e.currentTarget);
-        const phone = formData.get('phone') as string;
-        const password = formData.get('password') as string;
 
         try {
-            if (mode === 'register') {
-                const result = await registerUser(formData);
-                if (result.success) {
-                    // Auto-login after register via client-side signIn
-                    const res = await signIn('credentials', {
-                        phone,
-                        password,
-                        redirect: false,
-                    });
-                    if (res?.ok) {
-                        router.push(`/${locale}`);
-                        router.refresh();
-                    } else {
-                        // Registered but auto-login failed — redirect to login
-                        setSuccess('ສະໝັກສຳເລັດ! ກະລຸນາເຂົ້າສູ່ລະບົບ');
-                        setMode('login');
-                    }
-                } else {
-                    setError(result.error || 'Error');
-                }
+            const result = await signIn("credentials", {
+                phone,
+                password,
+                redirect: false,
+            });
+
+            if (result?.error) {
+                setError("ເບີໂທ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ");
             } else {
-                // Client-side signIn — properly sets session cookie
-                const res = await signIn('credentials', {
-                    phone,
-                    password,
-                    redirect: false,
-                });
-
-                if (res?.ok) {
-                    // Fetch session to get role for redirect
-                    const sessionRes = await fetch('/api/auth/session');
-                    const session = await sessionRes.json();
-                    const role = session?.user?.role || 'RENTER';
-
-                    const dest = role === 'ADMIN' ? `/${locale}/admin`
-                        : role === 'OWNER' ? `/${locale}/owner`
-                            : role === 'STAFF' ? `/${locale}/staff`
-                                : `/${locale}`;
-                    router.push(dest);
-                    router.refresh();
-                } else {
-                    setError(t('error'));
-                }
+                router.push("/");
+                router.refresh();
             }
         } catch {
-            setError(t('error'));
+            setError(t("common.error"));
         } finally {
             setLoading(false);
         }
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-12 hero-bg-light gold-dots-pattern">
+        <div className="min-h-screen bg-surface-150 flex items-center justify-center px-4 py-12">
             <div className="w-full max-w-md">
-
-                {/* Card */}
-                <div className="glass rounded-3xl p-8 shadow-xl border border-white/60">
-                    {/* Logo */}
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-royal-navy mb-2" style={{ fontFamily: 'var(--font-serif-lao)' }}>
-                            ມີໃສ່
-                        </h1>
-                        <p className="text-navy-600 text-sm">
-                            {mode === 'login' ? t('sign_in') : t('create_account')}
-                        </p>
-                    </div>
-
-                    {/* Error/Success */}
-                    {error && (
-                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 text-center">
-                            {error}
+                {/* Logo */}
+                <div className="text-center mb-8">
+                    <Link href="/" className="inline-flex items-center gap-2">
+                        <div className="w-12 h-12 bg-accent-500 rounded-xl flex items-center justify-center">
+                            <span className="text-white font-extrabold text-xl">M</span>
                         </div>
-                    )}
-                    {success && (
-                        <div className="mb-4 p-3 bg-emerald/10 border border-emerald/30 rounded-xl text-sm text-emerald text-center">
-                            {success}
-                        </div>
-                    )}
+                    </Link>
+                    <h1 className="text-2xl font-extrabold text-primary-900 mt-4">
+                        {t("auth.loginTitle")}
+                    </h1>
+                    <p className="text-surface-500 text-sm mt-1">
+                        {t("common.tagline")}
+                    </p>
+                </div>
 
-                    {/* Form */}
+                {/* Form Card */}
+                <div className="bg-white rounded-2xl shadow-lg border border-surface-300 p-6">
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {mode === 'register' && (
-                            <div>
-                                <label className="block text-sm font-medium text-navy-600 mb-1.5">
-                                    {t('name')}
-                                </label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                    <input
-                                        name="name"
-                                        type="text"
-                                        required
-                                        placeholder={t('name_placeholder')}
-                                        className="w-full pl-10 pr-4 py-3 bg-white/80 border border-gray-200 rounded-xl text-sm text-royal-navy placeholder:text-gray-400 focus:outline-none focus:border-champagne-gold focus:ring-2 focus:ring-champagne-gold/20 transition-all"
-                                    />
-                                </div>
+                        {/* Error */}
+                        {error && (
+                            <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">
+                                {error}
                             </div>
                         )}
 
+                        {/* Phone */}
                         <div>
-                            <label className="block text-sm font-medium text-navy-600 mb-1.5">
-                                {t('phone')}
+                            <label className="block text-sm font-semibold text-primary-900 mb-1.5">
+                                {t("auth.phoneNumber")}
                             </label>
                             <div className="relative">
-                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
                                 <input
-                                    name="phone"
                                     type="tel"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    placeholder="020xxxxxxxx"
+                                    className="w-full pl-11 pr-4 py-3 bg-surface-100 border border-surface-300 rounded-xl text-primary-900 placeholder:text-surface-500 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 outline-none transition-all"
                                     required
-                                    placeholder="020-XXXX-XXXX"
-                                    className="w-full pl-10 pr-4 py-3 bg-white/80 border border-gray-200 rounded-xl text-sm text-royal-navy placeholder:text-gray-400 focus:outline-none focus:border-champagne-gold focus:ring-2 focus:ring-champagne-gold/20 transition-all"
                                 />
                             </div>
                         </div>
 
+                        {/* Password */}
                         <div>
-                            <label className="block text-sm font-medium text-navy-600 mb-1.5">
-                                {t('password')}
+                            <label className="block text-sm font-semibold text-primary-900 mb-1.5">
+                                {t("auth.password")}
                             </label>
                             <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
                                 <input
-                                    name="password"
-                                    type={showPassword ? 'text' : 'password'}
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    className="w-full pl-11 pr-12 py-3 bg-surface-100 border border-surface-300 rounded-xl text-primary-900 placeholder:text-surface-500 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 outline-none transition-all"
                                     required
-                                    minLength={6}
-                                    placeholder={t('password_placeholder')}
-                                    className="w-full pl-10 pr-10 py-3 bg-white/80 border border-gray-200 rounded-xl text-sm text-royal-navy placeholder:text-gray-400 focus:outline-none focus:border-champagne-gold focus:ring-2 focus:ring-champagne-gold/20 transition-all"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-navy-600"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-500 hover:text-primary-900 transition-colors"
                                 >
-                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
                             </div>
                         </div>
-
-                        {mode === 'register' && (
-                            <div>
-                                <label className="block text-sm font-medium text-navy-600 mb-1.5">
-                                    {t('confirm_password')}
-                                </label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                    <input
-                                        name="confirmPassword"
-                                        type={showPassword ? 'text' : 'password'}
-                                        required
-                                        minLength={6}
-                                        placeholder={t('confirm_placeholder')}
-                                        className="w-full pl-10 pr-4 py-3 bg-white/80 border border-gray-200 rounded-xl text-sm text-royal-navy placeholder:text-gray-400 focus:outline-none focus:border-champagne-gold focus:ring-2 focus:ring-champagne-gold/20 transition-all"
-                                    />
-                                </div>
-                            </div>
-                        )}
 
                         {/* Submit */}
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 bg-champagne-gold text-royal-navy font-bold rounded-xl text-base hover:bg-champagne-gold/90 transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-champagne-gold/20"
+                            className="w-full py-3 bg-accent-500 hover:bg-accent-600 disabled:bg-surface-400 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-accent-500/20"
                         >
-                            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                            {mode === 'login' ? t('sign_in') : t('create_account')}
+                            {loading ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <>
+                                    {t("auth.loginTitle")}
+                                    <ArrowRight className="w-5 h-5" />
+                                </>
+                            )}
                         </button>
                     </form>
 
-                    {/* Divider */}
-                    <div className="flex items-center gap-3 my-6">
-                        <div className="flex-1 h-px bg-gray-200" />
-                        <span className="text-xs text-gray-400">
-                            {t('or')}
-                        </span>
-                        <div className="flex-1 h-px bg-gray-200" />
+                    {/* Register Link */}
+                    <div className="mt-6 text-center">
+                        <p className="text-sm text-surface-500">
+                            {t("auth.noAccount")}{" "}
+                            <Link
+                                href="/register"
+                                className="text-accent-500 font-semibold hover:underline"
+                            >
+                                {t("common.register")}
+                            </Link>
+                        </p>
                     </div>
-
-                    {/* Toggle */}
-                    <button
-                        onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); setSuccess(''); }}
-                        className="w-full py-3 bg-white border border-gray-200 text-navy-600 font-medium rounded-xl text-sm hover:border-champagne-gold hover:text-champagne-gold transition-all"
-                    >
-                        {mode === 'login' ? t('no_account') : t('has_account')}
-                    </button>
                 </div>
 
-                {/* Footer */}
-                <p className="text-center text-xs text-navy-600/60 mt-6">
-                    {t('terms')}
-                </p>
+                {/* Test Credentials */}
+                <div className="mt-6 bg-white/80 rounded-xl border border-surface-300 p-4">
+                    <p className="text-xs font-semibold text-surface-500 mb-2 uppercase tracking-wider">
+                        Test Credentials
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                        {[
+                            { role: "Admin", phone: "02099990001" },
+                            { role: "Staff", phone: "02099990002" },
+                            { role: "Owner", phone: "02055551001" },
+                            { role: "Renter", phone: "02077772001" },
+                        ].map((cred) => (
+                            <button
+                                key={cred.role}
+                                onClick={() => {
+                                    setPhone(cred.phone);
+                                    setPassword("meesai123");
+                                }}
+                                className="flex items-center gap-1.5 px-3 py-2 bg-surface-100 hover:bg-accent-50 rounded-lg border border-surface-300 hover:border-accent-500/30 transition-all text-left"
+                            >
+                                <Gem className="w-3 h-3 text-accent-500 shrink-0" />
+                                <div>
+                                    <p className="font-semibold text-primary-900">{cred.role}</p>
+                                    <p className="text-surface-500">{cred.phone}</p>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );

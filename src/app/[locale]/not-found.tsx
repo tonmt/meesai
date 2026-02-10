@@ -1,46 +1,46 @@
-import { Search, Home } from 'lucide-react'
-import Link from 'next/link'
+import { Search, Home, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function NotFoundPage() {
     return (
-        <div className="min-h-screen hero-bg-light gold-dots-pattern flex items-center justify-center px-4">
-            <div className="text-center max-w-md">
-                {/* 404 Number */}
-                <div className="text-[120px] md:text-[160px] font-black text-champagne-gold/15 leading-none select-none mb-[-30px]">
-                    404
+        <div className="min-h-screen bg-surface-150 flex items-center justify-center p-4">
+            <div className="max-w-md w-full text-center">
+                {/* 404 Visual */}
+                <div className="mb-8">
+                    <p className="text-8xl font-extrabold text-primary-900/10 select-none">
+                        404
+                    </p>
+                    <div className="mx-auto w-16 h-16 bg-accent-50 rounded-full flex items-center justify-center -mt-6 relative z-10">
+                        <Search className="w-8 h-8 text-accent-500" />
+                    </div>
                 </div>
 
-                {/* Icon */}
-                <div className="w-16 h-16 mx-auto mb-6 bg-champagne-gold/10 rounded-full flex items-center justify-center">
-                    <Search className="w-8 h-8 text-champagne-gold" />
-                </div>
-
-                {/* Title */}
-                <h1 className="text-2xl font-bold text-royal-navy mb-3">
+                {/* Message */}
+                <h1 className="text-2xl font-bold text-primary-900 mb-2">
                     ບໍ່ພົບໜ້ານີ້
                 </h1>
-                <p className="text-navy-600 mb-8 text-sm">
-                    Page not found — ກະລຸນາກວດສອບ URL ຫຼື ກັບຄືນໜ້າຫຼັກ
+                <p className="text-surface-500 text-sm mb-8">
+                    ໜ້າທີ່ທ່ານຊອກຫາບໍ່ມີ ຫຼື ຖືກລົບແລ້ວ
                 </p>
 
                 {/* Actions */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <div className="flex gap-3 justify-center">
                     <Link
                         href="/"
-                        className="w-full sm:w-auto px-6 py-3 bg-champagne-gold text-royal-navy font-bold rounded-xl hover:bg-champagne-gold/90 transition-all flex items-center justify-center gap-2"
+                        className="flex items-center gap-2 px-6 py-3 bg-primary-900 text-white rounded-xl font-semibold text-sm hover:bg-primary-800 transition-colors"
                     >
                         <Home className="w-4 h-4" />
-                        ໜ້າຫຼັກ / Home
+                        ກັບໜ້າຫຼັກ
                     </Link>
                     <Link
-                        href="/lo/browse"
-                        className="w-full sm:w-auto px-6 py-3 border border-gray-200 text-navy-600 font-medium rounded-xl hover:border-champagne-gold transition-all flex items-center justify-center gap-2"
+                        href="/browse"
+                        className="flex items-center gap-2 px-6 py-3 bg-surface-100 text-primary-900 rounded-xl font-semibold text-sm hover:bg-surface-200 transition-colors border border-surface-300"
                     >
-                        <Search className="w-4 h-4" />
-                        ເບິ່ງຊຸດ / Browse
+                        <ArrowLeft className="w-4 h-4" />
+                        ເບິ່ງຊຸດ
                     </Link>
                 </div>
             </div>
         </div>
-    )
+    );
 }

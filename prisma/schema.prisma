@@ -8,313 +8,427 @@ datasource db {
 }
 
 // ═══════════════════════════════════════════════════
-// ENUMS — Finite State Machine (เสาที่ 2)
+// ENUMS
 // ═══════════════════════════════════════════════════
 
 enum UserRole {
   RENTER
   OWNER
-  ADMIN
   STAFF
+  ADMIN
 }
 
-// FSM States — ข้ามขั้นไม่ได้ (enforced in Server Action)
-enum AssetStatus {
-  AVAILABLE // พร้อมเช่า
-  RESERVED // ถูกจอง (Lock Schedule)
-  PICKED_UP // ลูกค้ารับไปแล้ว
-  RETURNED // ลูกค้าคืนแล้ว
-  IN_QC // กำลังตรวจสอบ
-  CLEANING // กำลังซักอบรีด
-  DAMAGED // เสียหาย
-  MAINTENANCE // กำลังซ่อมบำรุง
-  RETIRED // ปลดระวาง
+enum GarmentStatus {
+  DRAFT       // เจ้าของสร้าง ยังไม่เปิดให้เช่า
+  AVAILABLE   // พร้อมเช่า
+  RESERVED    // ถูกจอง
+  RENTED      // กำลังใช้งาน
+  MAINTENANCE // ซ่อมบำรุง/ซัก
+  RETIRED     // ปลดระวาง
 }
 
 enum BookingStatus {
-  PENDING // รอชำระเงิน
-  CONFIRMED // ชำระแล้ว (Schedule Locked)
-  PICKED_UP // ลูกค้ารับชุดแล้ว
-  RETURNED // ลูกค้าคืนชุดแล้ว
-  COMPLETED // QC ผ่าน + คืนมัดจำแล้ว
-  CANCELLED // ยกเลิก
-  DISPUTED // มีข้อพิพาท
+  PENDING           // รอยืนยัน
+  AWAITING_PAYMENT  // รอชำระเงิน (มี countdown)
+  CONFIRMED         // ยืนยันแล้ว (จ่ายเงินแล้ว)
+  SHIPPING          // ร้านส่งของแล้ว / ไรเดอร์กำลังไปส่ง
+  PICKED_UP         // รับชุดแล้ว
+  IN_USE            // กำลังใช้งาน (countdown timer)
+  AWAITING_RETURN   // รอคืน (กระพริบเมื่อใกล้เวลา)
+  RETURNED          // คืนชุดแล้ว
+  QC_CHECKING       // ร้านกำลัง QC ตรวจสภาพ
+  COMPLETED         // เสร็จสมบูรณ์
+  CANCELLED         // ยกเลิก
+  DISPUTED          // มีข้อพิพาท
 }
 
-enum TransactionType {
-  RENTAL_PAYMENT // ลูกค้าจ่ายค่าเช่า → Platform
-  SERVICE_FEE // ค่าบริการแพลตฟอร์ม
-  DEPOSIT // มัดจำ → Holding
-  DEPOSIT_REFUND // คืนมัดจำ → ลูกค้า
-  OWNER_EARNING // Platform → Owner (ค่าเช่า 100%)
-  DAMAGE_DEDUCT // หักค่าเสียหายจากมัดจำ
-  PAYOUT // Owner ถอนเงินออก
+enum WalletTxType {
+  TOPUP      // เติมเงิน
+  WITHDRAW   // ถอนเงิน
+  LOCK       // กันวงเงินมัดจำ
+  UNLOCK     // ปลดล็อกมัดจำ
+  PAYMENT    // ชำระค่าเช่า
+  REFUND     // คืนเงิน
+  PENALTY    // หักค่าปรับ
+  COMMISSION // ค่า GP ที่ระบบหัก
 }
 
-enum EvidenceType {
-  CHECK_OUT // ส่งมอบชุด (ก่อนใช้)
-  CHECK_IN // รับคืนชุด (หลังใช้)
-  DAMAGE_REPORT // รายงานความเสียหาย
-  ONBOARDING // ตอนรับชุดเข้าระบบ
+enum ClaimStatus {
+  PENDING   // รอผู้เช่ายืนยัน
+  ACCEPTED  // ยอมรับ
+  DISPUTED  // โต้แย้ง
+  RESOLVED  // จบแล้ว
 }
 
-enum AssetGrade {
-  A // สภาพนางฟ้า
-  B // มีตำหนิเล็กน้อย
-  C // ใช้งานได้ ราคาลด
+enum EventTheme {
+  WEDDING       // งานดอง (งานแต่ง)
+  TEMPLE        // งานบุญ/เข้าวัด
+  GALA          // งานราตรี (Gala)
+  BRIDAL_PARTY  // ชุดเพื่อนเจ้าสาว
+  GRADUATION    // งานรับปริญญา
+  BUSINESS      // ธุรกิจ/ประชุม
+  COSTUME       // คอสตูม/ชุดแฟนซี
+  OTHER         // อื่นๆ
 }
 
-enum PayoutStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
+enum BodyType {
+  STANDARD   // มาตรฐาน
+  CURVY      // สาวอวบ
+  PETITE     // ตัวเล็ก
+  TALL       // สูง
+  PLUS_SIZE  // ไซส์ใหญ่
+}
+
+enum ConditionGrade {
+  A_PLUS  // เหมือนใหม่
+  A       // ดีมาก
+  B       // ดี (มีตำหนิเล็กน้อย)
+  C       // พอใช้ (มีตำหนิเห็นได้)
 }
 
 // ═══════════════════════════════════════════════════
 // CORE MODELS
 // ═══════════════════════════════════════════════════
 
+/// User — ผู้ใช้งานทุก Role
 model User {
   id        String   @id @default(cuid())
   name      String
   phone     String   @unique
   email     String?
-  password  String?  // bcrypt hash (nullable สำหรับ social login ในอนาคต)
+  password  String   // bcrypt hash
   role      UserRole @default(RENTER)
-  avatar    String?
-  idCardUrl String?  @map("id_card_url") // KYC สำหรับ Owner/Staff
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  avatar    String?  // MinIO URL
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  assets          ItemAsset[] // ชุดที่เป็นเจ้าของ
-  bookings        Booking[] // การจอง (ฝั่ง Renter)
-  wallet          Wallet?
-  evidenceRecords EvidenceLog[] // Evidence ที่ Staff บันทึก
-  statusChanges   StatusTransition[] // Status ที่ Staff เปลี่ยน
-  notifications   Notification[] // In-app notifications
+  // Relations
+  shop         Shop?              @relation("ShopOwner")
+  garments     Garment[]          @relation("GarmentOwner")
+  bookings     Booking[]          @relation("RenterBookings")
+  reviews      Review[]
+  wallet       Wallet?
+  sizeProfile  SizeProfile?
+  wishlists    Wishlist[]
+  userCoupons  UserCoupon[]
+  damageClaims DamageClaim[]      @relation("ClaimRenter")
 
   @@map("users")
 }
 
-// ═══════════════════════════════════════════════════
-// เสาที่ 3: Inventory — Product (SKU) vs ItemAsset (ตัวจริง)
-// ═══════════════════════════════════════════════════
-
-/// Product = ข้อมูลทั่วไปสำหรับแสดงหน้าเว็บ (เหมือน SKU)
-model Product {
-  id          String   @id @default(cuid())
-  titleLo     String   @map("title_lo")
-  titleEn     String?  @map("title_en")
-  description String?
-  images      String[] // รูปโปรโมท
-  rentalPrice Int      @map("rental_price") // ราคาเช่าแนะนำ (LAK)
-  buyPrice    Int?     @map("buy_price") // ราคาซื้อจริง (ใช้ประเมิน)
-  size        String // S, M, L, XL, etc.
-  color       String?
-  brand       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  categoryId String   @map("category_id")
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  assets ItemAsset[] // ตัวจริงหลายตัวต่อ 1 Product
-
-  @@map("products")
-}
-
-/// ItemAsset = ตัวชุดจริงในคลัง (แต่ละตัวมี UUID + Barcode เฉพาะ)
-model ItemAsset {
-  id           String      @id @default(cuid())
-  assetCode    String      @unique @map("asset_code") // e.g. "DRS-001-XYZ"
-  barcode      String?     @unique // Barcode/QR สำหรับ scan
-  status       AssetStatus @default(AVAILABLE)
-  grade        AssetGrade  @default(A)
-  condition    String? // หมายเหตุสภาพ
-  totalRentals Int         @default(0) @map("total_rentals") // นับรอบเช่า
-  totalWashes  Int         @default(0) @map("total_washes") // นับรอบซัก
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-
-  productId String  @map("product_id")
-  product   Product @relation(fields: [productId], references: [id])
-
-  ownerId String @map("owner_id")
-  owner   User   @relation(fields: [ownerId], references: [id])
-
-  bookings        Booking[]
-  statusHistory   StatusTransition[]
-  maintenanceLogs MaintenanceLog[]
-  evidenceLogs    EvidenceLog[]
-
-  @@map("item_assets")
-}
-
-model Category {
-  id        String @id @default(cuid())
-  nameLo    String @map("name_lo")
-  nameEn    String @map("name_en")
-  icon      String
-  slug      String @unique
-  sortOrder Int    @default(0) @map("sort_order")
-
-  products Product[]
-
-  @@map("categories")
-}
-
-// ═══════════════════════════════════════════════════
-// เสาที่ 1: Booking — Time-based Locking + Buffer
-// ═══════════════════════════════════════════════════
-
-model Booking {
-  id         String        @id @default(cuid())
-  eventDate  DateTime      @map("event_date")
-  pickupDate DateTime      @map("pickup_date")
-  returnDate DateTime      @map("return_date")
-  bufferEnd  DateTime      @map("buffer_end") // Auto: returnDate + BUFFER_DAYS
-  rentalFee  Int           @map("rental_fee") // → Owner Wallet
-  serviceFee Int           @map("service_fee") // → Platform
-  deposit    Int           @default(0) // มัดจำ (คืนเมื่อ QC ผ่าน)
-  status     BookingStatus @default(PENDING)
-  qrCode     String?       @map("qr_code") // QR ยืนยันตัวตนรับชุด
-  notes      String?
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-
-  renterId String @map("renter_id")
-  renter   User   @relation(fields: [renterId], references: [id])
-
-  assetId String    @map("asset_id")
-  asset   ItemAsset @relation(fields: [assetId], references: [id])
-
-  transactions Transaction[]
-  evidenceLogs EvidenceLog[]
-
-  @@index([assetId, pickupDate, bufferEnd]) // เสาที่ 1: Fast availability query
-  @@map("bookings")
-}
-
-// ═══════════════════════════════════════════════════
-// เสาที่ 4: Double-Entry Ledger (ระบบบัญชีคู่)
-// ═══════════════════════════════════════════════════
-
+/// Wallet — กระเป๋าเงิน
 model Wallet {
-  id     String @id @default(cuid())
+  id              String   @id @default(cuid())
+  availableBalance Int     @default(0) @map("available_balance") // ยอดใช้ได้ (LAK)
+  lockedBalance    Int     @default(0) @map("locked_balance")    // ยอดมัดจำ (locked)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
   userId String @unique @map("user_id")
   user   User   @relation(fields: [userId], references: [id])
-  // ❌ ไม่มี balance field — ใช้ computed จาก Transaction
 
-  outgoing Transaction[] @relation("SourceWallet")
-  incoming Transaction[] @relation("DestWallet")
-  payouts  Payout[]
+  transactions WalletTransaction[]
 
   @@map("wallets")
 }
 
-/// Transaction = Append-only ledger (ห้ามลบ/แก้ไข)
-model Transaction {
-  id        String          @id @default(cuid())
-  amount    Int // จำนวนเงิน (LAK)
-  type      TransactionType
-  note      String?
-  createdAt DateTime        @default(now())
-
-  sourceWalletId String? @map("source_wallet_id") // จ่าย (null = เงินจากภายนอก)
-  sourceWallet   Wallet? @relation("SourceWallet", fields: [sourceWalletId], references: [id])
-
-  destWalletId String? @map("dest_wallet_id") // รับ (null = จ่ายออกภายนอก)
-  destWallet   Wallet? @relation("DestWallet", fields: [destWalletId], references: [id])
-
-  bookingId String?  @map("booking_id")
-  booking   Booking? @relation(fields: [bookingId], references: [id])
-
-  @@index([sourceWalletId])
-  @@index([destWalletId])
-  @@map("transactions")
-}
-
-model Payout {
+/// WalletTransaction — ประวัติเงินเข้า/ออก
+model WalletTransaction {
   id          String       @id @default(cuid())
-  walletId    String       @map("wallet_id")
-  wallet      Wallet       @relation(fields: [walletId], references: [id])
-  amount      Int
-  bankName    String?      @map("bank_name")
-  bankAccount String?      @map("bank_account")
-  status      PayoutStatus @default(PENDING)
-  note        String?
-  createdAt   DateTime     @default(now())
-  processedAt DateTime?    @map("processed_at")
+  type        WalletTxType
+  amount      Int          // จำนวนเงิน (LAK)
+  description String?      // เช่น "มัดจำ ชุดราตรี DRS-001"
+  reference   String?      // bookingId หรือ orderId ที่เกี่ยวข้อง
+  createdAt   DateTime     @default(now()) @map("created_at")
 
-  @@map("payouts")
+  walletId String @map("wallet_id")
+  wallet   Wallet @relation(fields: [walletId], references: [id])
+
+  @@index([walletId, createdAt])
+  @@map("wallet_transactions")
+}
+
+/// SizeProfile — สัดส่วนร่างกาย
+model SizeProfile {
+  id     String @id @default(cuid())
+  bust   Int?   // อก (cm)
+  waist  Int?   // เอว (cm)
+  hip    Int?   // สะโพก (cm)
+  height Int?   // ส่วนสูง (cm)
+  weight Int?   // น้ำหนัก (kg)
+  notes  String? // หมายเหตุเพิ่มเติม
+
+  userId String @unique @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("size_profiles")
+}
+
+/// Wishlist — รายการโปรด
+model Wishlist {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+
+  userId    String @map("user_id")
+  user      User   @relation(fields: [userId], references: [id])
+
+  garmentId String  @map("garment_id")
+  garment   Garment @relation(fields: [garmentId], references: [id])
+
+  @@unique([userId, garmentId])
+  @@map("wishlists")
+}
+
+/// Coupon — คูปองส่วนลด (ร้านค้าสร้าง)
+model Coupon {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  description String?
+  discountPct Int?     @map("discount_pct")    // ส่วนลด % (เช่น 10 = 10%)
+  discountAmt Int?     @map("discount_amt")    // ส่วนลดจำนวนเงิน (LAK)
+  minOrder    Int      @default(0) @map("min_order") // ขั้นต่ำ
+  maxDiscount Int?     @map("max_discount")    // ลดสูงสุด
+  usageLimit  Int      @default(100) @map("usage_limit")
+  usedCount   Int      @default(0) @map("used_count")
+  startsAt    DateTime @map("starts_at")
+  expiresAt   DateTime @map("expires_at")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  shopId String? @map("shop_id") // null = platform-wide coupon
+  shop   Shop?   @relation(fields: [shopId], references: [id])
+
+  userCoupons UserCoupon[]
+
+  @@map("coupons")
+}
+
+/// UserCoupon — คูปองที่ผู้เช่าเก็บ
+model UserCoupon {
+  id       String    @id @default(cuid())
+  usedAt   DateTime? @map("used_at")
+  claimedAt DateTime @default(now()) @map("claimed_at")
+
+  userId   String @map("user_id")
+  user     User   @relation(fields: [userId], references: [id])
+
+  couponId String @map("coupon_id")
+  coupon   Coupon @relation(fields: [couponId], references: [id])
+
+  @@unique([userId, couponId])
+  @@map("user_coupons")
+}
+
+/// DamageClaim — รายงานความเสียหาย + ข้อพิพาท
+model DamageClaim {
+  id             String      @id @default(cuid())
+  description    String      // อธิบายจุดเสียหาย
+  estimatedCost  Int         @map("estimated_cost") // ราคาประเมิน (LAK)
+  status         ClaimStatus @default(PENDING)
+  resolution     String?     // ผลการตัดสิน
+  photoBefore    String?     @map("photo_before") // MinIO URL (QC ขาออก)
+  photoAfter     String?     @map("photo_after")  // MinIO URL (QC ขาเข้า)
+  photoEvidence  String?     @map("photo_evidence") // MinIO URL (จุดเสียหาย)
+  createdAt      DateTime    @default(now()) @map("created_at")
+  resolvedAt     DateTime?   @map("resolved_at")
+
+  bookingId String  @map("booking_id")
+  booking   Booking @relation(fields: [bookingId], references: [id])
+
+  renterId String @map("renter_id")
+  renter   User   @relation("ClaimRenter", fields: [renterId], references: [id])
+
+  @@index([bookingId])
+  @@map("damage_claims")
 }
 
 // ═══════════════════════════════════════════════════
-// เสาที่ 5: Audit Trail & Evidence Log
+// PRODUCT MODELS
 // ═══════════════════════════════════════════════════
 
-/// EvidenceLog = รูปภาพหลักฐาน (Immutable — MinIO Object Lock)
-model EvidenceLog {
-  id        String       @id @default(cuid())
-  type      EvidenceType
-  photos    String[] // MinIO URLs (WORM protected)
-  notes     String?
-  createdAt DateTime     @default(now())
+/// Shop — ร้านค้า/แบรนด์ (1 Owner = 1 Shop)
+model Shop {
+  id          String  @id @default(cuid())
+  nameLo      String  @map("name_lo")
+  nameEn      String? @map("name_en")
+  description String?
+  logo        String? // MinIO URL
+  phone       String?
+  address     String?
+  isVerified  Boolean @default(false) @map("is_verified")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-  bookingId String?  @map("booking_id")
-  booking   Booking? @relation(fields: [bookingId], references: [id])
+  // Owner (1:1)
+  ownerId  String   @unique @map("owner_id")
+  owner    User     @relation("ShopOwner", fields: [ownerId], references: [id])
 
-  assetId String    @map("asset_id")
-  asset   ItemAsset @relation(fields: [assetId], references: [id])
+  // Relations
+  garments Garment[]
+  coupons  Coupon[]
 
-  recordedById String @map("recorded_by_id")
-  recordedBy   User   @relation(fields: [recordedById], references: [id])
+  @@map("shops")
+}
 
-  @@map("evidence_logs")
+/// Category — หมวดหมู่ชุด
+model Category {
+  id        String @id @default(cuid())
+  nameLo    String @map("name_lo")
+  nameEn    String @map("name_en")
+  icon      String // Lucide icon name
+  slug      String @unique
+  sortOrder Int    @default(0) @map("sort_order")
+
+  garments Garment[]
+
+  @@map("categories")
+}
+
+/// Garment — ชุดแฟชั่น (รวม Product + Asset concept จาก V1)
+model Garment {
+  id          String        @id @default(cuid())
+  code        String        @unique // e.g. "DRS-001"
+  titleLo     String        @map("title_lo")
+  titleEn     String?       @map("title_en")
+  description String?
+  size        String        // S, M, L, XL, FREE
+  color       String?
+  colorHex    String?       @map("color_hex") // #hex for skin-tone matching
+  brand       String?
+  rentalPrice Int           @map("rental_price") // ค่าเช่า (LAK) ต่อครั้ง
+  deposit     Int           @default(0) // ค่ามัดจำ (Hold Amount)
+  status      GarmentStatus @default(DRAFT)
+  // Journey: Condition Report
+  condition      String?        // หมายเหตุสภาพ (legacy)
+  conditionGrade ConditionGrade @default(A_PLUS) @map("condition_grade")
+  defectNotes    String?        @map("defect_notes") // อธิบายตำหนิ เช่น "รอยด้ายรัน 2mm ที่ชายกระโปรง"
+  // Journey: Size Ranges (cm) for Fit Assurance
+  bustMin    Int?   @map("bust_min")
+  bustMax    Int?   @map("bust_max")
+  waistMin   Int?   @map("waist_min")
+  waistMax   Int?   @map("waist_max")
+  hipMin     Int?   @map("hip_min")
+  hipMax     Int?   @map("hip_max")
+  heightMin  Int?   @map("height_min")
+  heightMax  Int?   @map("height_max")
+  // Journey: Contextual Tags
+  eventThemes  EventTheme[]  @map("event_themes")  // งานดอง, งานบุญ, ราตรี
+  bodyTypes    BodyType[]    @map("body_types")    // สาวอวบ, ตัวเล็ก
+  // Journey: Operations
+  backupSizeFee Int    @default(50000) @map("backup_size_fee") // ค่าส่งไซส์สำรอง (LAK)
+  bufferDays    Int    @default(1) @map("buffer_days") // Buffer days for laundry after return
+  totalRentals  Int    @default(0) @map("total_rentals")
+  isFeatured    Boolean @default(false) @map("is_featured")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  categoryId String   @map("category_id")
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  shopId String @map("shop_id")
+  shop   Shop   @relation(fields: [shopId], references: [id])
+
+  ownerId String @map("owner_id")
+  owner   User   @relation("GarmentOwner", fields: [ownerId], references: [id])
+
+  images    GarmentImage[]
+  bookings  Booking[]
+  wishlists Wishlist[]
+
+  @@index([status])
+  @@index([categoryId])
+  @@index([shopId])
+  @@map("garments")
+}
+
+/// GarmentImage — รูปภาพชุด (แยก table สำหรับ ordering + management)
+model GarmentImage {
+  id        String @id @default(cuid())
+  url       String // MinIO URL
+  alt       String?
+  sortOrder Int    @default(0) @map("sort_order")
+
+  garmentId String  @map("garment_id")
+  garment   Garment @relation(fields: [garmentId], references: [id], onDelete: Cascade)
+
+  @@map("garment_images")
 }
 
 // ═══════════════════════════════════════════════════
-// เสาที่ 2: FSM — Status Transition Log
+// BOOKING & REVIEW
 // ═══════════════════════════════════════════════════
 
-/// StatusTransition = Log ทุกครั้งที่สถานะ Asset เปลี่ยน
-model StatusTransition {
-  id        String      @id @default(cuid())
-  fromState AssetStatus
-  toState   AssetStatus
-  reason    String?
-  createdAt DateTime    @default(now())
+/// Booking — การจองชุด
+model Booking {
+  id          String        @id @default(cuid())
+  eventDate   DateTime      @map("event_date")    // วันงาน
+  pickupDate  DateTime      @map("pickup_date")   // วันรับชุด
+  returnDate  DateTime      @map("return_date")   // วันคืนชุด
+  bufferEnd   DateTime      @map("buffer_end")    // วันสิ้นสุด buffer (returnDate + bufferDays)
+  // Fees (IA = Itemized Amount)
+  rentalFee   Int           @map("rental_fee")     // ค่าเช่า
+  depositFee  Int           @default(0) @map("deposit_fee") // ค่ามัดจำ
+  serviceFee  Int           @default(0) @map("service_fee") // ค่าบริการ
+  deliveryFee Int           @default(0) @map("delivery_fee") // ค่าส่ง
+  laundryFee  Int           @default(0) @map("laundry_fee")  // ค่าซัก
+  totalAmount Int           @map("total_amount")   // ยอดรวม (ค่าจ่ายจริง)
+  holdAmount  Int           @default(0) @map("hold_amount")  // วงเงินประกัน (ไม่ตัดเงินจริง)
+  status      BookingStatus @default(PENDING)
+  notes       String?
+  // Backup Size Option
+  backupSizeRequested Boolean @default(false) @map("backup_size_requested")
+  // Payment tracking
+  paidAt      DateTime?     @map("paid_at")        // เวลาชำระ
+  payDeadline DateTime?     @map("pay_deadline")   // หมดเขตชำระ
+  // Shipping
+  trackingCode String?      @map("tracking_code")  // เลข tracking
+  shippedAt    DateTime?    @map("shipped_at")     // เวลาส่ง
+  deliveredAt  DateTime?    @map("delivered_at")   // เวลาลูกค้ารับ
+  returnedAt   DateTime?    @map("returned_at")    // เวลาคืน
+  qcPassedAt   DateTime?    @map("qc_passed_at")   // เวลา QC ผ่าน
+  // Pre-Return Self Check
+  preReturnPhotos String[]  @map("pre_return_photos") // URLs ภาพก่อนส่งคืน
+  // Extension
+  extendedDays Int          @default(0) @map("extended_days")
+  extensionFee Int          @default(0) @map("extension_fee")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
 
-  assetId String    @map("asset_id")
-  asset   ItemAsset @relation(fields: [assetId], references: [id])
+  // Relations
+  renterId String  @map("renter_id")
+  renter   User    @relation("RenterBookings", fields: [renterId], references: [id])
 
-  changedById String @map("changed_by_id")
-  changedBy   User   @relation(fields: [changedById], references: [id])
+  garmentId String  @map("garment_id")
+  garment   Garment @relation(fields: [garmentId], references: [id])
 
-  @@index([assetId, createdAt])
-  @@map("status_transitions")
+  review       Review?
+  damageClaims DamageClaim[]
+
+  @@index([garmentId, pickupDate, returnDate])
+  @@index([renterId])
+  @@index([status])
+  @@map("bookings")
 }
 
-/// MaintenanceLog = ประวัติการซ่อมบำรุง
-model MaintenanceLog {
-  id          String    @id @default(cuid())
-  description String // รายละเอียดการซ่อม
-  cost        Int       @default(0) // ค่าใช้จ่าย (LAK)
-  photos      String[] // รูปก่อน/หลังซ่อม
-  createdAt   DateTime  @default(now())
-  completedAt DateTime? @map("completed_at")
+/// Review — รีวิวจากผู้เช่า
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 stars
+  comment   String?
+  createdAt DateTime @default(now()) @map("created_at")
 
-  assetId String    @map("asset_id")
-  asset   ItemAsset @relation(fields: [assetId], references: [id])
+  bookingId String  @unique @map("booking_id")
+  booking   Booking @relation(fields: [bookingId], references: [id])
 
-  @@map("maintenance_logs")
+  userId String @map("user_id")
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("reviews")
 }
 
-// ═══════════════════════════════════════════════════
-// System Config (Buffer Days, Platform Fee %, etc.)
-// ═══════════════════════════════════════════════════
-
+/// SystemConfig — ค่าตั้งระบบ
 model SystemConfig {
   id    String  @id @default(cuid())
   key   String  @unique
@@ -322,24 +436,4 @@ model SystemConfig {
   note  String?
 
   @@map("system_configs")
-}
-
-// ═══════════════════════════════════════════════════
-// เสาที่ 9: Notifications — In-app bell
-// ═══════════════════════════════════════════════════
-
-model Notification {
-  id        String   @id @default(cuid())
-  type      String   // BOOKING_CONFIRMED, BOOKING_CANCELLED, PAYOUT_DONE, etc.
-  title     String
-  body      String
-  link      String?  // Optional deep-link e.g. /lo/bookings
-  isRead    Boolean  @default(false) @map("is_read")
-  createdAt DateTime @default(now())
-
-  userId String @map("user_id")
-  user   User   @relation(fields: [userId], references: [id])
-
-  @@index([userId, isRead])
-  @@map("notifications")
 }

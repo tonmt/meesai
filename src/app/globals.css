@@ -1,108 +1,107 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@300;400;500;600;700&family=Noto+Serif+Lao:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════
+   MeeSai V2 — Marketplace Edition Design System
+   Theme: "The Mega Fashion Mall"
+   Bright & Busy · Light Grey + Royal Blue + Orange
+   ═══════════════════════════════════════════════════ */
+
 @theme {
-  /* ─── MeeSai Color System (Light Theme) ─── */
-  --color-royal-navy: #0F172A;
-  --color-navy-800: #1E293B;
-  --color-navy-700: #334155;
-  --color-navy-600: #475569;
+  /* Primary — Royal Blue (Trust & Infrastructure) */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e3a5f;
+  --color-primary-900: #0f172a;
 
-  --color-champagne-gold: #D4AF37;
-  --color-gold-light: #F0D060;
-  --color-gold-dark: #B8941F;
+  /* Accent — Shopping Orange (Action & Urgency) */
+  --color-accent-50: #fff7ed;
+  --color-accent-100: #ffedd5;
+  --color-accent-200: #fed7aa;
+  --color-accent-300: #fdba74;
+  --color-accent-400: #fb923c;
+  --color-accent-500: #ff5722;
+  --color-accent-600: #ea4c1c;
+  --color-accent-700: #c2410c;
 
-  --color-off-white: #F9FAFB;
-  --color-cream: #F5F0E8;
+  /* Surface — Light & Clean */
+  --color-surface-50: #ffffff;
+  --color-surface-100: #f9fafb;
+  --color-surface-150: #f5f5f5;
+  --color-surface-200: #f1f3f5;
+  --color-surface-300: #e5e7eb;
+  --color-surface-400: #d1d5db;
+  --color-surface-500: #9ca3af;
 
-  --color-emerald: #10B981;
-  --color-emerald-dark: #059669;
+  /* Status */
+  --color-status-success: #22c55e;
+  --color-status-warning: #f59e0b;
+  --color-status-danger: #ef4444;
+  --color-status-info: #3b82f6;
 
-  --color-danger: #EF4444;
-  --color-warning: #F59E0B;
-
-  /* ─── Typography ─── */
-  --font-serif-lao: 'Noto Serif Lao', 'Playfair Display', serif;
-  --font-sans-lao: 'Noto Sans Lao', 'Inter', sans-serif;
+  /* Flash Rent Red */
+  --color-flash: #ff1744;
 }
 
-/* ─── Base Styles (Light Theme) ─── */
+/* ── Base ── */
 html {
-  scroll-behavior: smooth;
+  color-scheme: light;
 }
 
 body {
-  font-family: var(--font-sans-lao);
-  color: var(--color-royal-navy);
-  background: #FFFFFF;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  @apply bg-surface-150 text-primary-900 antialiased;
+  font-family: "Inter", "Noto Sans Lao", system-ui, -apple-system, sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* ─── Gold Text Gradient ─── */
-.text-gold-gradient {
-  background: linear-gradient(135deg, var(--color-gold-dark), var(--color-champagne-gold), var(--color-gold-dark));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* ── Typography ── */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-bold tracking-tight text-primary-900;
 }
 
-/* ─── Gold Border Shimmer ─── */
-.gold-shimmer {
-  position: relative;
-  overflow: hidden;
+/* ── Scrollbar (thin for marketplace feel) ── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
 }
 
-.gold-shimmer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
-  animation: shimmer 3s infinite;
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
 }
 
-@keyframes shimmer {
-  0% {
-    left: -100%;
-  }
-
-  100% {
-    left: 100%;
-  }
+::-webkit-scrollbar-thumb {
+  @apply bg-surface-400 rounded-full;
 }
 
-/* ─── Glass Effect (Light Theme) ─── */
-.glass {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-surface-500;
 }
 
-.glass-light {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+/* ── Focus Ring ── */
+*:focus-visible {
+  @apply outline-2 outline-offset-2 outline-accent-500;
 }
 
-/* ─── Glass Dark (for sections that need dark bg) ─── */
-.glass-dark {
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(212, 175, 55, 0.15);
+/* ── Selection ── */
+::selection {
+  @apply bg-accent-500/20 text-primary-900;
 }
 
-/* ─── Animations ─── */
-@keyframes fadeInUp {
+/* ── Animations ── */
+@keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(8px);
   }
 
   to {
@@ -111,31 +110,7 @@ body {
   }
 }
 
-@keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes pulse-gold {
-
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
-  }
-
-  50% {
-    box-shadow: 0 0 20px 10px rgba(212, 175, 55, 0);
-  }
-}
-
-@keyframes slideInRight {
+@keyframes slide-left {
   from {
     transform: translateX(100%);
   }
@@ -145,63 +120,129 @@ body {
   }
 }
 
-@keyframes slideInUp {
-  from {
-    transform: translateY(100%);
+@keyframes pulse-badge {
+
+  0%,
+  100% {
+    transform: scale(1);
   }
 
-  to {
-    transform: translateY(0);
+  50% {
+    transform: scale(1.1);
   }
 }
 
-.animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
-.animate-pulse-gold {
-  animation: pulse-gold 2s ease-in-out infinite;
+@keyframes countdown-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
 }
 
-.animate-slide-in-right {
-  animation: slideInRight 0.3s ease-out forwards;
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
 }
 
-.animate-slide-in-up {
-  animation: slideInUp 0.3s ease-out forwards;
+.animate-slide-left {
+  animation: slide-left 0.3s ease-out;
 }
 
-/* ─── Scroll snap for occasions ─── */
-.scroll-snap-x {
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
+.animate-pulse-badge {
+  animation: pulse-badge 2s ease-in-out infinite;
 }
 
-.scroll-snap-x>* {
-  scroll-snap-align: start;
+.animate-marquee {
+  animation: marquee 25s linear infinite;
 }
 
-/* ─── Hide scrollbar ─── */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(90deg,
+      theme(--color-surface-200) 25%,
+      theme(--color-surface-300) 50%,
+      theme(--color-surface-200) 75%);
+  background-size: 200% 100%;
 }
 
-.no-scrollbar {
+.animate-countdown {
+  animation: countdown-pulse 1s ease-in-out infinite;
+}
+
+/* ── Card Hover ── */
+.card-hover {
+  @apply transition-all duration-200;
+}
+
+.card-hover:hover {
+  @apply shadow-lg -translate-y-0.5;
+}
+
+/* ── Price Styling ── */
+.price-accent {
+  @apply text-accent-500 font-extrabold;
+}
+
+.price-original {
+  @apply text-surface-500 line-through text-sm;
+}
+
+/* ── Badge ── */
+.badge-flash {
+  @apply bg-flash text-white text-xs font-bold px-2 py-0.5 rounded;
+}
+
+.badge-available {
+  @apply bg-status-success text-white text-xs font-medium px-2 py-0.5 rounded;
+}
+
+.badge-free {
+  @apply bg-primary-100 text-primary-700 text-xs font-medium px-2 py-0.5 rounded;
+}
+
+/* ── Bottom Navigation ── */
+.bottom-nav {
+  @apply fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-surface-300 shadow-lg;
+}
+
+.bottom-nav-item {
+  @apply flex flex-col items-center justify-center gap-0.5 py-1 text-surface-500 transition-colors;
+}
+
+.bottom-nav-item.active {
+  @apply text-accent-500;
+}
+
+/* ── Hide scrollbar for horizontal scroll (Icon Menu) ── */
+.scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-/* ─── Light Hero Background ─── */
-.hero-bg-light {
-  background: linear-gradient(180deg, #F8F6F0 0%, #FFFFFF 40%, #FBF9F4 100%);
-}
-
-/* ─── Decorative Gold Dots ─── */
-.gold-dots-pattern {
-  background-image: radial-gradient(circle, rgba(212, 175, 55, 0.08) 1px, transparent 1px);
-  background-size: 24px 24px;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

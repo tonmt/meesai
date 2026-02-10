@@ -1,60 +1,63 @@
-'use client'
+"use client";
 
-import { useLocale, useTranslations } from 'next-intl'
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
-import Link from 'next/link'
+import { useEffect } from "react";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import Link from "next/link";
 
-export default function ErrorPage({
+export default function GlobalError({
     error,
     reset,
 }: {
-    error: Error & { digest?: string }
-    reset: () => void
+    error: Error & { digest?: string };
+    reset: () => void;
 }) {
-    const locale = useLocale()
-    const t = useTranslations('error_page')
+    useEffect(() => {
+        console.error("[MeeSai Error]", error);
+    }, [error]);
 
     return (
-        <div className="min-h-screen hero-bg-light gold-dots-pattern flex items-center justify-center px-4">
-            <div className="text-center max-w-md">
+        <div className="min-h-screen bg-surface-150 flex items-center justify-center p-4">
+            <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-surface-300 p-8 text-center">
                 {/* Icon */}
-                <div className="w-20 h-20 mx-auto mb-6 bg-red-50 rounded-full flex items-center justify-center">
-                    <AlertTriangle className="w-10 h-10 text-red-400" />
+                <div className="mx-auto w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-6">
+                    <AlertTriangle className="w-8 h-8 text-red-500" />
                 </div>
 
                 {/* Title */}
-                <h1 className="text-3xl font-bold text-royal-navy mb-3">
-                    {t('title')}
+                <h1 className="text-2xl font-bold text-primary-900 mb-2">
+                    ມີບັນຫາເກີດຂຶ້ນ
                 </h1>
-                <p className="text-navy-600 mb-8">
-                    {t('description')}
+                <p className="text-surface-500 text-sm mb-6">
+                    ເກີດຂໍ້ຜິດພາດບາງຢ່າງ ກະລຸນາລອງໃໝ່ອີກຄັ້ງ
                 </p>
 
-                {/* Error digest for debugging */}
-                {error.digest && (
-                    <p className="text-xs text-gray-300 font-mono mb-6 bg-gray-50 px-3 py-1.5 rounded-lg inline-block">
-                        Error ID: {error.digest}
-                    </p>
+                {/* Error Detail (dev only) */}
+                {process.env.NODE_ENV === "development" && (
+                    <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-6 text-left">
+                        <p className="text-xs text-red-600 font-mono break-all">
+                            {error.message}
+                        </p>
+                    </div>
                 )}
 
                 {/* Actions */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <div className="flex gap-3">
                     <button
                         onClick={reset}
-                        className="w-full sm:w-auto px-6 py-3 bg-champagne-gold text-royal-navy font-bold rounded-xl hover:bg-champagne-gold/90 transition-all flex items-center justify-center gap-2"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-primary-900 text-white rounded-xl font-semibold text-sm hover:bg-primary-800 transition-colors"
                     >
                         <RefreshCw className="w-4 h-4" />
-                        {t('try_again')}
+                        ລອງໃໝ່
                     </button>
                     <Link
-                        href={`/${locale}`}
-                        className="w-full sm:w-auto px-6 py-3 border border-gray-200 text-navy-600 font-medium rounded-xl hover:border-champagne-gold transition-all flex items-center justify-center gap-2"
+                        href="/"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-surface-100 text-primary-900 rounded-xl font-semibold text-sm hover:bg-surface-200 transition-colors border border-surface-300"
                     >
                         <Home className="w-4 h-4" />
-                        {t('go_home')}
+                        ໜ້າຫຼັກ
                     </Link>
                 </div>
             </div>
         </div>
-    )
+    );
 }

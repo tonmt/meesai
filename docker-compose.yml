@@ -1,7 +1,5 @@
 services:
-  # ============================================
-  # MeeSai Application
-  # ============================================
+  # ── App ──
   app:
     build:
       context: .
@@ -11,35 +9,28 @@ services:
     ports:
       - "4200:3000"
     environment:
-      DATABASE_URL: postgresql://meesai:meesai2026@postgres:5432/meesai?schema=public
-      REDIS_URL: redis://redis:6379
-      MINIO_ENDPOINT: minio
-      MINIO_PORT: "9000"
-      MINIO_ACCESS_KEY: meesai_minio
-      MINIO_SECRET_KEY: meesai_minio_secret_2026
-      MINIO_BUCKET: meesai-images
-      NODE_ENV: production
-      NEXTAUTH_URL: https://meesai.vgroup.work
-      AUTH_SECRET: ${AUTH_SECRET}
-      AUTH_TRUST_HOST: "true"
+      - DATABASE_URL=postgresql://meesai:meesai2026@postgres:5432/meesai?schema=public
+      - AUTH_SECRET=${AUTH_SECRET}
+      - AUTH_TRUST_HOST=true
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-meesai_minio}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY:-meesai_minio_secret_2026}
+      - MINIO_BUCKET=${MINIO_BUCKET:-meesai-images}
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=production
     depends_on:
       postgres:
         condition: service_healthy
       minio:
+        condition: service_started
+      redis:
         condition: service_healthy
     networks:
-      - meesai_net
+      - meesai-net
       - web-proxy
-    healthcheck:
-      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000').then(r=>{if(!r.ok)throw r.status;process.exit(0)}).catch(()=>process.exit(1))\""]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
-  # ============================================
-  # PostgreSQL Database
-  # ============================================
+  # ── PostgreSQL ──
   postgres:
     image: postgres:16-alpine
     container_name: meesai-postgres
@@ -47,22 +38,20 @@ services:
     ports:
       - "4203:5432"
     environment:
+      POSTGRES_DB: meesai
       POSTGRES_USER: meesai
       POSTGRES_PASSWORD: meesai2026
-      POSTGRES_DB: meesai
     volumes:
-      - meesai_postgres_data:/var/lib/postgresql/data
-    networks:
-      - meesai_net
+      - meesai-pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U meesai -d meesai"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U meesai"]
+      interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - meesai-net
 
-  # ============================================
-  # MinIO Object Storage
-  # ============================================
+  # ── MinIO (S3 Compatible Storage) ──
   minio:
     image: minio/minio:latest
     container_name: meesai-minio
@@ -73,39 +62,36 @@ services:
     environment:
       MINIO_ROOT_USER: meesai_minio
       MINIO_ROOT_PASSWORD: meesai_minio_secret_2026
-    volumes:
-      - meesai_minio_data:/data
     command: server /data --console-address ":9001"
+    volumes:
+      - meesai-minio:/data
     networks:
-      - meesai_net
-    healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
+      - meesai-net
 
-  # ============================================
-  # Redis Cache
-  # ============================================
+  # ── Redis ──
   redis:
     image: redis:7-alpine
     container_name: meesai-redis
     restart: unless-stopped
     ports:
       - "4206:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
-      - meesai_redis_data:/data
+      - meesai-redis:/data
     networks:
-      - meesai_net
-    command: redis-server --appendonly yes
+      - meesai-net
 
 volumes:
-  meesai_postgres_data:
-  meesai_minio_data:
-  meesai_redis_data:
+  meesai-pgdata:
+  meesai-minio:
+  meesai-redis:
 
 networks:
-  meesai_net:
+  meesai-net:
     driver: bridge
   web-proxy:
     external: true
