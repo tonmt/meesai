@@ -93,7 +93,7 @@ export default async function WalletPage() {
 
             <div className="max-w-xl mx-auto px-4 -mt-3">
                 {/* ── Action Buttons ── */}
-                <WalletActions userId={session.user.id} balance={wallet?.availableBalance || 0} />
+                <WalletActions userId={session.user.id as string} balance={wallet?.availableBalance || 0} />
 
                 {/* ── Transaction History ── */}
                 <section className="bg-white rounded-2xl shadow-sm border border-surface-300 overflow-hidden">

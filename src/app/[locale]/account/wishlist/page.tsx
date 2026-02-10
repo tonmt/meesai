@@ -47,7 +47,7 @@ export default async function WishlistPage() {
                                 className="bg-white rounded-xl border border-surface-300 overflow-hidden card-hover group relative"
                             >
                                 {/* Remove btn */}
-                                <RemoveWishlistButton garmentId={w.garmentId} userId={session.user.id} />
+                                <RemoveWishlistButton garmentId={w.garmentId} userId={session.user!.id as string} />
 
                                 {/* ❤️ Heart */}
                                 < div className="absolute top-2 left-2 z-10" >

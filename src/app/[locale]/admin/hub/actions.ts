@@ -64,19 +64,11 @@ export async function getHubBookings(tab: string = "incoming") {
     return bookings;
 }
 
+import { HUB_QC_CHECKLIST } from "./constants";
+
 // ═══════════════════════════════════════════════════
 // HUB RECEIVE (ร้าน → Hub)
 // ═══════════════════════════════════════════════════
-
-const HUB_QC_CHECKLIST = [
-    "garment_condition",      // สภาพชุดปกติ
-    "no_business_card",       // ไม่มีนามบัตร/Line ID แนบมา
-    "hygiene_seal",           // ใส่ Hygiene Seal แล้ว
-    "correct_size_label",     // ป้ายไซส์ตรงกับ Order
-    "packaging_ready",        // แพ็คกล่อง + Return Kit พร้อม
-];
-
-export { HUB_QC_CHECKLIST };
 
 export async function hubReceiveBooking(bookingId: string, checklist: string[]) {
     const session = await auth();

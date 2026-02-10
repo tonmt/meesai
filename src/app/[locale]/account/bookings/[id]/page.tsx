@@ -157,7 +157,7 @@ export default async function BookingDetailPage({ params }: Props) {
                             <span className="text-sm">ຊົ່ວໂມງ</span>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
-                            <ExtendButton bookingId={booking.id} dailyRate={booking.garment.pricePerDay} />
+                            <ExtendButton bookingId={booking.id} dailyRate={booking.garment.rentalPrice} />
                             <Link
                                 href={`/account/bookings/${booking.id}/return`}
                                 className="py-2.5 bg-white text-green-600 rounded-xl font-bold text-sm transition-colors hover:bg-green-50 flex items-center justify-center gap-1"

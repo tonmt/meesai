@@ -16,8 +16,8 @@ import {
     hubQCCheck,
     hubCleaningDone,
     hubComplete,
-    HUB_QC_CHECKLIST,
 } from "./actions";
+import { HUB_QC_CHECKLIST } from "./constants";
 
 const CHECKLIST_LABELS: Record<string, string> = {
     garment_condition: "✅ ສະພາບຊຸດປົກກະຕິ",
