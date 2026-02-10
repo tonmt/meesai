@@ -133,10 +133,10 @@ export default async function HomePage() {
                             <p className="text-accent-400 text-sm font-semibold mb-2 tracking-wider uppercase">
                                 Fashion Bank of Laos
                             </p>
-                            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-3 leading-tight">
+                            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold !text-white mb-3 leading-tight" style={{ color: 'white' }}>
                                 {t("landing.hero.title")}
                             </h1>
-                            <p className="text-white/90 text-sm sm:text-base max-w-lg mx-auto">
+                            <p className="!text-white/90 text-sm sm:text-base max-w-lg mx-auto" style={{ color: 'rgba(255,255,255,0.9)' }}>
                                 {t("landing.hero.subtitle")}
                             </p>
                         </div>
