@@ -60,6 +60,24 @@ enum ClaimStatus {
   RESOLVED  // จบแล้ว
 }
 
+enum TicketStatus {
+  OPEN          // ใหม่ ยังไม่มีใครรับ
+  IN_PROGRESS   // กำลังดูแล
+  WAITING       // รอลูกค้าตอบกลับ
+  RESOLVED      // แก้ไขแล้ว
+  CLOSED        // ปิดแล้ว
+}
+
+enum TicketCategory {
+  PHOTO_REQUEST  // ขอดูรูปจริง
+  SIZE_INQUIRY   // ขอขนาดละเอียด
+  AVAILABILITY   // เช็คคิวว่าง
+  DEPOSIT_QUERY  // ถามเรื่องมัดจำ
+  DELIVERY       // ติดตามการส่ง
+  DAMAGE         // แจ้งความเสียหาย
+  GENERAL        // อื่นๆ
+}
+
 enum EventTheme {
   WEDDING       // งานดอง (งานแต่ง)
   TEMPLE        // งานบุญ/เข้าวัด
@@ -113,6 +131,8 @@ model User {
   wishlists    Wishlist[]
   userCoupons  UserCoupon[]
   damageClaims DamageClaim[]      @relation("ClaimRenter")
+  customerTickets SupportTicket[]  @relation("CustomerTickets")
+  adminTickets    SupportTicket[]  @relation("AdminTickets")
 
   @@map("users")
 }
@@ -403,8 +423,9 @@ model Booking {
   garmentId String  @map("garment_id")
   garment   Garment @relation(fields: [garmentId], references: [id])
 
-  review       Review?
-  damageClaims DamageClaim[]
+  review         Review?
+  damageClaims   DamageClaim[]
+  supportTickets SupportTicket[]
 
   @@index([garmentId, pickupDate, returnDate])
   @@index([renterId])
@@ -436,4 +457,34 @@ model SystemConfig {
   note  String?
 
   @@map("system_configs")
+}
+
+/// SupportTicket — Concierge Ticket System
+model SupportTicket {
+  id         String         @id @default(cuid())
+  category   TicketCategory
+  status     TicketStatus   @default(OPEN)
+  subject    String
+  message    String
+  response   String?
+  priority   Int            @default(0)  // 0=normal, 1=high, 2=urgent
+  resolvedAt DateTime?      @map("resolved_at")
+  createdAt  DateTime       @default(now()) @map("created_at")
+  updatedAt  DateTime       @updatedAt @map("updated_at")
+
+  // Customer
+  customerId String @map("customer_id")
+  customer   User   @relation("CustomerTickets", fields: [customerId], references: [id])
+
+  // Booking context (optional)
+  bookingId  String?  @map("booking_id")
+  booking    Booking? @relation(fields: [bookingId], references: [id])
+
+  // Assigned admin
+  assigneeId String? @map("assignee_id")
+  assignee   User?   @relation("AdminTickets", fields: [assigneeId], references: [id])
+
+  @@index([status, createdAt])
+  @@index([customerId])
+  @@map("support_tickets")
 }

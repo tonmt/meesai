@@ -21,6 +21,7 @@ import {
     ChevronRight,
     Settings,
     Bell,
+    LifeBuoy,
 } from "lucide-react";
 import { getOrCreateWallet, getBookingStatusCounts } from "./actions";
 
@@ -32,6 +33,7 @@ export default async function MyAccountPage() {
     const userId = session.user.id as string;
     const wallet = await getOrCreateWallet(userId);
     const counts = await getBookingStatusCounts(userId);
+    const role = (session.user as Record<string, unknown>).role as string;
 
     const statusItems = [
         { icon: CreditCard, label: "ທີ່ຕ້ອງຊຳລະ", count: counts.toPay, href: "/account/bookings?tab=toPay", color: "text-red-500" },
@@ -45,6 +47,9 @@ export default async function MyAccountPage() {
         { icon: Ruler, label: "My Size Profile", desc: "ບັນທຶກສັດສ່ວນ", href: "/account/size-profile" },
         { icon: Heart, label: "Favorite", desc: "ລາຍການທີ່ມັກ", href: "/account/wishlist" },
         { icon: Headphones, label: "Help Center", desc: "MeeSai Concierge", href: "/sos" },
+        ...(role === "ADMIN" ? [
+            { icon: LifeBuoy, label: "Concierge Dashboard", desc: "ຈັດການ Ticket ลູກຄ້າ", href: "/admin/concierge" },
+        ] : []),
     ];
 
     return (
