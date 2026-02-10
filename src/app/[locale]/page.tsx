@@ -117,9 +117,9 @@ export default function HomePage() {
                         className="object-cover"
                         priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary-900/80 via-primary-800/60 to-primary-700/40" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary-900/90 via-primary-900/75 to-primary-800/70" />
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-center px-6">
+                        <div className="text-center px-6" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.7), 0 0 20px rgba(0,0,0,0.4)' }}>
                             <p className="text-accent-400 text-sm font-semibold mb-2 tracking-wider uppercase">
                                 Fashion Bank of Laos
                             </p>
