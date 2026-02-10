@@ -398,8 +398,8 @@ export default async function BrowsePage({ searchParams }: Props) {
                                         <span>|</span>
                                         <span>{garment.size}</span>
                                         {garment.shop && (
-                                            <span className="ml-auto truncate max-w-[80px]">
-                                                🏪 {garment.shop.nameLo}
+                                            <span className="ml-auto truncate max-w-[80px] text-status-success">
+                                                ✅ Verified Partner
                                             </span>
                                         )}
                                     </div>

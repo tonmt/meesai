@@ -62,7 +62,7 @@ export default async function SOSHelpPage() {
                         <p className="text-sm font-bold text-primary-900">{activeBooking.garment.titleLo}</p>
                         <p className="text-xs text-surface-500 mt-0.5">{activeBooking.garment.code}</p>
                         {activeBooking.garment.shop && (
-                            <p className="text-xs text-surface-500 mt-0.5">🏪 {activeBooking.garment.shop.nameLo}</p>
+                            <p className="text-xs text-status-success mt-0.5">✅ Verified Partner</p>
                         )}
                     </div>
                 )}
@@ -129,20 +129,18 @@ export default async function SOSHelpPage() {
                 <section className="bg-white rounded-2xl border border-surface-300 p-4 space-y-3">
                     <h2 className="text-sm font-bold text-primary-900 mb-1">📞 ຕິດຕໍ່ສຸກເສີນ</h2>
 
-                    {/* Call Shop */}
-                    {activeBooking?.garment.shop?.phone && (
-                        <a
-                            href={`tel:${activeBooking.garment.shop.phone}`}
-                            className="flex items-center gap-3 p-3 bg-accent-50 border border-accent-200 rounded-xl hover:bg-accent-100 transition-colors"
-                        >
-                            <Phone className="w-6 h-6 text-accent-500" />
-                            <div className="flex-1">
-                                <p className="text-xs font-bold text-primary-900">ໂທຫາຮ້ານ</p>
-                                <p className="text-[10px] text-surface-500">{activeBooking.garment.shop.nameLo} — {activeBooking.garment.shop.phone}</p>
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-surface-400" />
-                        </a>
-                    )}
+                    {/* Call MeeSai Support */}
+                    <a
+                        href="tel:02099999999"
+                        className="flex items-center gap-3 p-3 bg-accent-50 border border-accent-200 rounded-xl hover:bg-accent-100 transition-colors"
+                    >
+                        <Phone className="w-6 h-6 text-accent-500" />
+                        <div className="flex-1">
+                            <p className="text-xs font-bold text-primary-900">ໂທຫາ MeeSai Support</p>
+                            <p className="text-[10px] text-surface-500">MeeSai ສາຍດ່ວນ — ພ້ອມຊ່ວຍເຫຼືອທຸກກໍລະນີ</p>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-surface-400" />
+                    </a>
 
                     {/* WhatsApp Support */}
                     <a

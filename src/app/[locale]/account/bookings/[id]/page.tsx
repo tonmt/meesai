@@ -21,6 +21,8 @@ import {
     ChevronRight,
     Plus,
     Phone,
+    Shield,
+    MessageCircle,
 } from "lucide-react";
 
 type Props = {
@@ -266,20 +268,18 @@ export default async function BookingDetailPage({ params }: Props) {
                     <section className="bg-white rounded-2xl border border-surface-300 p-4">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-accent-50 rounded-lg flex items-center justify-center">
-                                <span className="font-bold text-accent-600">
-                                    {booking.garment.shop.nameLo.charAt(0)}
-                                </span>
+                                <Shield className="w-5 h-5 text-accent-600" />
                             </div>
                             <div className="flex-1">
-                                <p className="text-sm font-bold text-primary-900">{booking.garment.shop.nameLo}</p>
+                                <p className="text-sm font-bold text-primary-900">Partner Store: MS-{booking.garment.shopId?.slice(-3).toUpperCase()}</p>
                             </div>
-                            <a
-                                href={`tel:${booking.garment.shop.phone || ''}`}
+                            <Link
+                                href="/sos"
                                 className="flex items-center gap-1 px-3 py-1.5 border border-accent-500 text-accent-500 text-xs font-semibold rounded-lg hover:bg-accent-50 transition-colors"
                             >
-                                <Phone className="w-3 h-3" />
-                                ຕິດຕໍ່ຮ້ານ
-                            </a>
+                                <MessageCircle className="w-3 h-3" />
+                                ຕິດຕໍ່ MeeSai
+                            </Link>
                         </div>
                     </section>
                 )}

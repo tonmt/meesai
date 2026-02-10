@@ -473,18 +473,16 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
                     )}
                 </section>
 
-                {/* ── Shop Info ── */}
+                {/* ── Partner Info (Masked) ── */}
                 {garment.shop && (
                     <section className="bg-white mt-2 p-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="w-12 h-12 bg-accent-100 rounded-xl flex items-center justify-center">
-                                    <span className="text-lg font-bold text-accent-600">
-                                        {garment.shop.nameLo?.charAt(0)}
-                                    </span>
+                                    <Shield className="w-6 h-6 text-accent-600" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-primary-900">{garment.shop.nameLo}</p>
+                                    <p className="font-bold text-primary-900">Partner Store: MS-{garment.shopId.slice(-3).toUpperCase()}</p>
                                     <div className="flex items-center gap-2 text-xs text-surface-500 mt-0.5">
                                         {garment.shop.isVerified && (
                                             <span className="flex items-center gap-0.5 text-status-success">
@@ -494,12 +492,9 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
                                     </div>
                                 </div>
                             </div>
-                            <Link
-                                href={`/browse?shop=${garment.shopId}`}
-                                className="px-4 py-2 border border-accent-500 text-accent-500 text-sm font-semibold rounded-lg hover:bg-accent-50 transition-colors"
-                            >
-                                ເບິ່ງຮ້ານ
-                            </Link>
+                            <span className="px-4 py-2 bg-accent-50 text-accent-600 text-sm font-semibold rounded-lg">
+                                by MeeSai
+                            </span>
                         </div>
                     </section>
                 )}
