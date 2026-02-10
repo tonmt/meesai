@@ -22,6 +22,7 @@ import {
     Settings,
     Bell,
     LifeBuoy,
+    Warehouse,
 } from "lucide-react";
 import { getOrCreateWallet, getBookingStatusCounts } from "./actions";
 
@@ -49,6 +50,7 @@ export default async function MyAccountPage() {
         { icon: Headphones, label: "Help Center", desc: "MeeSai Concierge", href: "/sos" },
         ...(role === "ADMIN" ? [
             { icon: LifeBuoy, label: "Concierge Dashboard", desc: "ຈັດການ Ticket ลູກຄ້າ", href: "/admin/concierge" },
+            { icon: Warehouse, label: "Hub Fulfillment", desc: "QC + ຈັດສົ່ງ + ຊັກແຫ້ງ", href: "/admin/hub" },
         ] : []),
     ];
 

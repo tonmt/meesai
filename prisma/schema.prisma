@@ -31,12 +31,16 @@ enum BookingStatus {
   PENDING           // รอยืนยัน
   AWAITING_PAYMENT  // รอชำระเงิน (มี countdown)
   CONFIRMED         // ยืนยันแล้ว (จ่ายเงินแล้ว)
+  AT_HUB            // ชุดอยู่ที่ MeeSai Hub (กำลัง QC + แพ็ค)
   SHIPPING          // ร้านส่งของแล้ว / ไรเดอร์กำลังไปส่ง
   PICKED_UP         // รับชุดแล้ว
   IN_USE            // กำลังใช้งาน (countdown timer)
   AWAITING_RETURN   // รอคืน (กระพริบเมื่อใกล้เวลา)
   RETURNED          // คืนชุดแล้ว
-  QC_CHECKING       // ร้านกำลัง QC ตรวจสภาพ
+  RETURNED_TO_HUB   // ชุดกลับถึง MeeSai Hub (รอ QC ขากลับ)
+  QC_CHECKING       // Hub/ร้านกำลัง QC ตรวจสภาพ
+  CLEANING          // ชักแห้ง + บำรุงรักษา
+  RETURNED_TO_SHOP  // คืนชุดให้ร้านแล้ว
   COMPLETED         // เสร็จสมบูรณ์
   CANCELLED         // ยกเลิก
   DISPUTED          // มีข้อพิพาท
@@ -413,6 +417,12 @@ model Booking {
   // Extension
   extendedDays Int          @default(0) @map("extended_days")
   extensionFee Int          @default(0) @map("extension_fee")
+  // Hub Fulfillment
+  hubReceivePhotos String[] @map("hub_receive_photos")  // รูปตอนรับชุดเข้า Hub
+  hubSendPhotos    String[] @map("hub_send_photos")     // รูปตอนส่งออกจาก Hub
+  hubChecklist     String[] @map("hub_checklist")       // QC checklist items passed
+  hubReceivedAt    DateTime? @map("hub_received_at")    // เวลารับเข้า Hub
+  hubSentAt        DateTime? @map("hub_sent_at")        // เวลาส่งออกจาก Hub
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
 
