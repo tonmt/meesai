@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Send, CheckCircle, Loader2 } from "lucide-react";
+import { Send, CheckCircle, Loader2, Bot } from "lucide-react";
 import { respondToTicket } from "./actions";
+import { generateAutoResponse } from "./autoResponse";
 
 const quickResponses: Record<string, string[]> = {
     PHOTO_REQUEST: [
@@ -38,7 +39,22 @@ export default function TicketResponseForm({ ticketId, category }: { ticketId: s
     const [response, setResponse] = useState("");
     const [isPending, startTransition] = useTransition();
     const [done, setDone] = useState(false);
+    const [autoInfo, setAutoInfo] = useState<{ confidence: string; source: string } | null>(null);
+    const [isAutoLoading, setIsAutoLoading] = useState(false);
     const templates = quickResponses[category] || quickResponses.GENERAL;
+
+    const handleAutoResponse = async () => {
+        setIsAutoLoading(true);
+        try {
+            const result = await generateAutoResponse(ticketId);
+            if (result) {
+                setResponse(result.response);
+                setAutoInfo({ confidence: result.confidence, source: result.source });
+            }
+        } finally {
+            setIsAutoLoading(false);
+        }
+    };
 
     const handleSubmit = (resolve: boolean) => {
         if (!response.trim()) return;
@@ -76,6 +92,26 @@ export default function TicketResponseForm({ ticketId, category }: { ticketId: s
                     </button>
                 ))}
             </div>
+
+            {/* 🤖 Auto-Response Button */}
+            <button
+                type="button"
+                onClick={handleAutoResponse}
+                disabled={isAutoLoading}
+                className="w-full mb-2 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl text-xs font-bold hover:from-indigo-600 hover:to-purple-600 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+            >
+                {isAutoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bot className="w-4 h-4" />}
+                🤖 Auto-Response (ดึงข้อมูลจริงจาก DB)
+            </button>
+
+            {autoInfo && (
+                <p className={`text-[9px] mb-2 px-1 ${autoInfo.confidence === "high" ? "text-green-600" :
+                        autoInfo.confidence === "medium" ? "text-amber-600" : "text-red-500"
+                    }`}>
+                    {autoInfo.confidence === "high" ? "✅" : autoInfo.confidence === "medium" ? "⚠️" : "❌"}
+                    {" "}Confidence: {autoInfo.confidence} — Source: {autoInfo.source}
+                </p>
+            )}
 
             {/* Response Input */}
             <div className="flex gap-2">
