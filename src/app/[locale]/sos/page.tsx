@@ -125,6 +125,30 @@ export default async function SOSHelpPage() {
                     </div>
                 </section>
 
+                {/* ═══ FAQ QUICK BUTTONS — ປຸ່ມຖາມດ່ວນ ═══ */}
+                <section className="bg-white rounded-2xl border border-surface-300 p-4">
+                    <h2 className="text-sm font-bold text-primary-900 mb-3">💬 ຖາມດ່ວນ — ກົດ 1 ປຸ່ມ ໄດ້ຄຳຕອບ</h2>
+                    <div className="grid grid-cols-2 gap-2">
+                        {[
+                            { emoji: "📸", label: "ຂໍດູຮູບຈິງ", msg: "ຂໍດູຮູບຈິງສິນຄ້າ" },
+                            { emoji: "📏", label: "ຂໍຂະໜາດລະອຽດ", msg: "ຂໍຂະໜາດລະອຽດ (ວັດຕົວຈິງ)" },
+                            { emoji: "📅", label: "ເຊັກຄິວວ່າງ", msg: "ຂໍເຊັກຄິວວ່າງວັນທີ" },
+                            { emoji: "💳", label: "ຖາມເລື່ອງມັດຈຳ", msg: "ລະບົບມັດຈຳເຮັດວຽກແນວໃດ?" },
+                            { emoji: "🚚", label: "ຕິດຕາມການສົ່ງ", msg: "ຂໍຕິດຕາມສະຖານະການສົ່ງ" },
+                        ].map((q) => (
+                            <a
+                                key={q.label}
+                                href={`https://wa.me/85620XXXXXXX?text=${encodeURIComponent(q.msg)}`}
+                                target="_blank"
+                                className="flex items-center gap-2 p-2.5 bg-surface-100 border border-surface-200 rounded-xl hover:bg-accent-50 hover:border-accent-200 transition-colors"
+                            >
+                                <span className="text-lg">{q.emoji}</span>
+                                <span className="text-[11px] font-semibold text-primary-900">{q.label}</span>
+                            </a>
+                        ))}
+                    </div>
+                </section>
+
                 {/* ═══ QUICK ACTIONS ═══ */}
                 <section className="bg-white rounded-2xl border border-surface-300 p-4 space-y-3">
                     <h2 className="text-sm font-bold text-primary-900 mb-1">📞 ຕິດຕໍ່ສຸກເສີນ</h2>
