@@ -44,7 +44,7 @@ export default async function MyAccountPage() {
     const tools = [
         { icon: Ruler, label: "My Size Profile", desc: "ບັນທຶກສັດສ່ວນ", href: "/account/size-profile" },
         { icon: Heart, label: "Favorite", desc: "ລາຍການທີ່ມັກ", href: "/account/wishlist" },
-        { icon: Headphones, label: "Help Center", desc: "ແຊັດກັບ Admin", href: "#" },
+        { icon: Headphones, label: "Help Center", desc: "MeeSai Concierge", href: "/sos" },
     ];
 
     return (

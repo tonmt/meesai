@@ -559,7 +559,7 @@ export default async function ProductDetailPage({ params, searchParams }: Props)
                 <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
                     <Link href="/sos" className="flex flex-col items-center gap-0.5 px-3 text-surface-500 hover:text-accent-500 transition-colors">
                         <MessageCircle className="w-5 h-5" />
-                        <span className="text-[10px] font-medium">ແຊັດ</span>
+                        <span className="text-[10px] font-medium">ຊ່ວຍເຫຼືອ</span>
                     </Link>
                     <Link href="/account/bookings" className="flex flex-col items-center gap-0.5 px-3 text-surface-500 hover:text-accent-500 transition-colors border-r border-surface-300 pr-4">
                         <ShoppingBag className="w-5 h-5" />
